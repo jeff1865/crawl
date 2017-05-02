@@ -3,6 +3,8 @@ package com.yg.webshow.crawl.data;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import com.yg.webshow.crawl.core.SysConf;
+
 /**
  * RowKey : [site_id]_[reversed_post_no]
  * CQ : timestamp
@@ -40,11 +42,20 @@ public class RtCrawlTable extends AbstractTableEx {
 		return Bytes.toBytes(sb.toString()) ;
 	}
 	
+	public void AddInitData(String siteid, int postNo, String author, String anchorTitle, String docTs) {
+		return ;
+	}
+	
 	
 	@Override
 	public byte[] getTableName() {
 		// TODO Auto-generated method stub
 		return TABLE_NAME;
 	}
-
+	
+	public static void main(String ... v) {
+		System.out.println("Run ...");
+		RtCrawlTable test = new RtCrawlTable(SysConf.createNewHbaseConn());
+		byte[] createdRowKey = test.createRowKey("1", 1399);
+	}
 }
