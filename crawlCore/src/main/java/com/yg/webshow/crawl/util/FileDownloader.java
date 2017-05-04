@@ -15,7 +15,7 @@ import java.net.URI;
 
 public class FileDownloader {
 
-	public void downloadFile(String url, String localFilePath) throws Exception {
+	public static void downloadFile(String url, String localFilePath) throws Exception {
 		
 		URI uri = new URI(url);
 		HttpGet httpget = new HttpGet(uri);

@@ -14,9 +14,10 @@ import com.yg.webshow.crawl.webdoc.template.DbbsTitleLine;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbs;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbsList;
 
-public class ClienAllPark implements IBbsContents, IBbsList {
-	
+//public class ClienAllPark implements IBbsContents, IBbsList {
+public class ClienAllPark implements IDocWrapper {	
 	private String seedUrl = null ;
+	private final String seedId = "clien.park";
 	
 	public ClienAllPark(String seedUrl){
 		this.seedUrl = seedUrl ;
@@ -48,7 +49,7 @@ public class ClienAllPark implements IBbsContents, IBbsList {
 				System.out.println("URL :" + tag.select("td[class=post_subject] > a[href]").attr("abs:href"));
 				line.setUrl(tag.select("td[class=post_subject] > a[href]").attr("abs:href"));
 //				System.out.println("Title :" + tag.select("td[class=post_subject]").text());
-				line.setTitle(tag.select("td[class=post_subject]").text());
+				line.setTitle(tag.select("td[class=post_subject] > a[href]").text());
 //				System.out.println("User :" + tag.select("td[class=post_name]").text());
 				line.setAuthor(tag.select("td[class=post_name]").text());
 //				System.out.println("TimeStamp :" + tag.select("td:eq(3) > span[title]").attr("title"));
@@ -94,6 +95,16 @@ public class ClienAllPark implements IBbsContents, IBbsList {
 		return wdb;
 	}
 	
+	@Override
+	public String getSeedId() {
+		return this.seedId;
+	}
+
+	@Override
+	public String getDateFormat() {
+		return "yyyy-MM-dd HH:mm:ss";
+	}
+	
 	public static void main(String ... v) {
 		String url = "http://clien.net/cs2/bbs/board.php?bo_table=park";
 		ClienAllPark test = new ClienAllPark(url);
@@ -102,11 +113,10 @@ public class ClienAllPark implements IBbsContents, IBbsList {
 		int i = 0;
 		for(DbbsTitleLine bbsList : bbsTitleList.getTitleLines()) {
 			System.out.println(i++ + "\t" + bbsList);
-			if(i < 3) {
+			if(i < 4) {
 				WebDocBbs content = test.getContent(bbsList.getUrl()) ;
 				System.out.println(i + "\tContents :" + content);
 			}
 		}
-		
 	}
 }
