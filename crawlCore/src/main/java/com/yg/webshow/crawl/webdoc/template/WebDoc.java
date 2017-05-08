@@ -10,13 +10,17 @@ public class WebDoc {
 	protected String docTitle ;
 	protected String contTitle ;
 	protected String contentsText ;
+	private String contentsHtml ;
 	protected Date docDate ;
 	protected List<String> meta ;
 	
 	public String toString() {
 		StringBuffer sb = new StringBuffer() ;
 		sb.append("docTitle:").append(this.docTitle).append("|");
-		sb.append("contents:").append(this.contentsText);
+		sb.append("docDate:").append(this.docDate).append("|");
+		sb.append("contTitle:").append(this.contTitle).append("|");
+		sb.append("contents:").append(this.contentsText).append("|");
+		sb.append("htmlContents:").append(this.contentsHtml);
 		return sb.toString();
 	}
 	
@@ -49,5 +53,13 @@ public class WebDoc {
 	}
 	public void setMeta(List<String> meta) {
 		this.meta = meta;
+	}
+
+	public String getContentsHtml() {
+		return contentsHtml;
+	}
+
+	public void setContentsHtml(String contentsHtml) {
+		this.contentsHtml = contentsHtml;
 	}
 }

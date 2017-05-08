@@ -104,19 +104,4 @@ public class ClienAllPark implements IDocWrapper {
 	public String getDateFormat() {
 		return "yyyy-MM-dd HH:mm:ss";
 	}
-	
-	public static void main(String ... v) {
-		String url = "http://clien.net/cs2/bbs/board.php?bo_table=park";
-		ClienAllPark test = new ClienAllPark(url);
-		WebDocBbsList bbsTitleList = test.getList();
-		
-		int i = 0;
-		for(DbbsTitleLine bbsList : bbsTitleList.getTitleLines()) {
-			System.out.println(i++ + "\t" + bbsList);
-			if(i < 4) {
-				WebDocBbs content = test.getContent(bbsList.getUrl()) ;
-				System.out.println(i + "\tContents :" + content);
-			}
-		}
-	}
 }

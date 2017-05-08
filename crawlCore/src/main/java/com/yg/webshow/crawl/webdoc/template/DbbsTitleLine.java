@@ -12,7 +12,7 @@ public class DbbsTitleLine {
 		StringBuffer sb = new StringBuffer();
 		sb.append(no).append("\t");
 		sb.append(title).append("\t");
-		sb.append(author).append("\t");
+		sb.append("[").append(author).append("]\t");
 		sb.append(date).append("\t");
 		sb.append(hit).append("\t");
 		sb.append(url);

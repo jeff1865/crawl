@@ -10,11 +10,16 @@ import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellScanner;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.PageFilter;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.yg.webshow.crawl.core.SysConf;
@@ -37,8 +42,10 @@ public class RtCrawlTable extends AbstractTableEx {
 	
 	private static final byte[] CQ_SITE_ID = Bytes.toBytes("sid");
 	private static final byte[] CQ_CONTENTS = Bytes.toBytes("cont");
+	private static final byte[] CQ_HTML_CONTENTS = Bytes.toBytes("hcnt");
 	private static final byte[] CQ_ANCHOR_TITLE = Bytes.toBytes("alt");
 	private static final byte[] CQ_DOC_TITLE = Bytes.toBytes("dtl");
+	private static final byte[] CQ_CONT_TITLE = Bytes.toBytes("ctl");
 	private static final byte[] CQ_AUTHOR = Bytes.toBytes("ath");
 	private static final byte[] CQ_DOC_TS = Bytes.toBytes("dts");
 	private static final byte[] CQ_STATUS = Bytes.toBytes("sts");
@@ -62,6 +69,41 @@ public class RtCrawlTable extends AbstractTableEx {
 		return Bytes.toBytes(sb.toString()) ;
 	}
 	
+	public CrawlDataExBo getCrawlData(String siteId, int postNo) {
+		CrawlDataExBo cdb = new CrawlDataExBo() ;
+		cdb.setSiteId(siteId);
+		cdb.setPostId(String.valueOf(postNo));
+		
+		Get get = new Get(this.createRowKey(siteId, postNo));
+		Result rs = super.getData(get) ;
+		
+		while(rs.advance()) {
+			Cell cell = rs.current();
+			
+			if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_SITE_ID)) {
+				cdb.setSiteId(new String(CellUtil.cloneValue(cell)));
+			} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_CONTENTS)) {
+				cdb.setFilteredContents(new String(CellUtil.cloneValue(cell)));
+			} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_ANCHOR_TITLE)) {
+				cdb.setAnchorTitle(new String(CellUtil.cloneValue(cell)));;
+			} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_DOC_TITLE)) {
+				cdb.setDocTitle(new String(CellUtil.cloneValue(cell)));;
+			} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_AUTHOR)) {
+				cdb.setAuthor(new String(CellUtil.cloneValue(cell)));;
+			} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_DOC_TS)) {
+				cdb.setDocTs(Bytes.toLong(CellUtil.cloneValue(cell)));
+			} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_STATUS)) {
+				cdb.setStatus(new String(CellUtil.cloneValue(cell)));;
+			} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_URL)) {
+				cdb.setUrl(new String(CellUtil.cloneValue(cell)));
+			} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_HTML_CONTENTS)) {
+				cdb.setHtmlContents(new String(CellUtil.cloneValue(cell)));
+			}
+		}
+				
+		return cdb ;
+	}
+	
 	public void addInitData(String siteId, int postNo, String author, String anchorTitle, long docTs, String url) {
 		
 		Put put = new Put(this.createRowKey(siteId, postNo));
@@ -75,11 +117,12 @@ public class RtCrawlTable extends AbstractTableEx {
 	}
 	
 	public void updateExtData(String siteId, int postNo, String status, String docTitle, 
-			String contents, List<String> lstMedia) {
+			String contents, String htmlContents, List<String> lstMedia) {
 		Put put = new Put(this.createRowKey(siteId, postNo));
 		put.addColumn(CF, CQ_STATUS, Bytes.toBytes(VAL_STATUS_EXTDATA)) ;
 		if(docTitle != null) put.addColumn(CF, CQ_DOC_TITLE, Bytes.toBytes(docTitle)) ;
 		if(contents != null) put.addColumn(CF, CQ_CONTENTS, Bytes.toBytes(contents));
+		if(htmlContents != null) put.addColumn(CF, CQ_HTML_CONTENTS, Bytes.toBytes(htmlContents));
 		
 		if(lstMedia != null && lstMedia.size() > 0) {
 			put.addColumn(CF, CQ_MEDIA_COUNT, Bytes.toBytes(lstMedia.size()));
@@ -93,12 +136,19 @@ public class RtCrawlTable extends AbstractTableEx {
 	}
 	
 	
-	public List<CrawlDataExBo> getLatest(int topN) {
+	public List<CrawlDataExBo> getLatest(int topN, String status) {
 		ArrayList<CrawlDataExBo> res = new ArrayList<CrawlDataExBo>();
 		
 		Scan scan = new Scan();
 		scan.addFamily(CF);
-		scan.setFilter(new PageFilter(topN));
+		FilterList fList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+		if(status != null) {
+			fList.addFilter(new SingleColumnValueFilter(CF,
+					CQ_STATUS, CompareOp.EQUAL, Bytes.toBytes(status)));
+		}
+		fList.addFilter(new PageFilter(topN));
+		scan.setFilter(fList) ;
+//		scan.setFilter(new PageFilter(topN));
 		
 		ResultScanner rsc = super.scanData(scan) ;
 		Result rs = null;
@@ -137,6 +187,8 @@ public class RtCrawlTable extends AbstractTableEx {
 						cdb.setStatus(new String(CellUtil.cloneValue(cell)));;
 					} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_URL)) {
 						cdb.setUrl(new String(CellUtil.cloneValue(cell)));
+					} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_HTML_CONTENTS)) {
+						cdb.setHtmlContents(new String(CellUtil.cloneValue(cell)));
 					}
 				}
 				res.add(cdb) ;
@@ -164,9 +216,13 @@ public class RtCrawlTable extends AbstractTableEx {
 //		test.addInitData("19", 223, "tabaco", "Fire Potato~", System.currentTimeMillis(), "http://www.naver.com");
 		
 		int i = 0;
-		List<CrawlDataExBo> latest = test.getLatest(7);
+		List<CrawlDataExBo> latest = test.getLatest(1, RtCrawlTable.VAL_STATUS_INIT);
 		for(CrawlDataBo cdb : latest) {
 			System.out.println(i++ + " -> " + cdb);
 		}
+		
+		System.out.println("---------------");
+		CrawlDataExBo crawlData = test.getCrawlData("clien.park", 10714694) ;
+		System.out.println("GetData -->" + crawlData);
 	}
 }

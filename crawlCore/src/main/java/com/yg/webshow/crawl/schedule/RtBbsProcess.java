@@ -2,16 +2,19 @@ package com.yg.webshow.crawl.schedule;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mortbay.log.Log;
 
 import com.yg.webshow.crawl.core.SysConf;
+import com.yg.webshow.crawl.data.CrawlDataExBo;
 import com.yg.webshow.crawl.data.RtCrawlTable;
 import com.yg.webshow.crawl.seeds.ClienAllPark;
 import com.yg.webshow.crawl.seeds.IBbsContents;
 import com.yg.webshow.crawl.seeds.IBbsList;
 import com.yg.webshow.crawl.seeds.IDocWrapper;
+import com.yg.webshow.crawl.seeds.NewClienPark;
 import com.yg.webshow.crawl.util.FileDownloader;
 import com.yg.webshow.crawl.webdoc.template.DbbsTitleLine;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbs;
@@ -46,11 +49,26 @@ public class RtBbsProcess {
 	private List<DbbsTitleLine> procExtAnchorList() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(this.docWrapper.getDateFormat());	//TODO need to move seed engine
 		WebDocBbsList bbsList = this.docWrapper.getList();
+		
+		int baseNo = 0;
+		List<CrawlDataExBo> latest = this.rtCrawlTable.getLatest(1, null) ;
+		if(latest != null && latest.size() == 1) {
+			String postId = latest.get(0).getPostId();
+			baseNo = Integer.parseInt(postId);
+		}
+		
+		ArrayList<DbbsTitleLine> newLines = new ArrayList<DbbsTitleLine>();
+		
 		List<DbbsTitleLine> titleLines = bbsList.getTitleLines();
-				
 		int i = 0;
+		int no = 0;
 		for(DbbsTitleLine dtl : titleLines) {
+			no = Integer.parseInt(dtl.getNo());
+			if(baseNo >= no) continue ;
+			
+			newLines.add(dtl);
 			System.out.println(i++  +"\t" + dtl);
+			
 			try {
 				rtCrawlTable.addInitData(this.docWrapper.getSeedId(), Integer.parseInt(dtl.getNo()), 
 						dtl.getAuthor(), dtl.getTitle(), dateFormat.parse(dtl.getDate().trim()).getTime(), dtl.getUrl());
@@ -59,7 +77,7 @@ public class RtBbsProcess {
 			}
 		}
 		
-		return titleLines ;
+		return newLines ;
 	}
 	
 	private void procSummarizeDoc(List<DbbsTitleLine> lstNewLines) {
@@ -74,6 +92,7 @@ public class RtBbsProcess {
 					RtCrawlTable.VAL_STATUS_EXTDATA, 
 					content.getDocTitle(), 
 					content.getContentsText(), 
+					content.getContentsHtml(),
 					imgUrl);
 			
 			if(imgUrl != null && imgUrl.size() > 0) {
@@ -95,13 +114,24 @@ public class RtBbsProcess {
 	
 	public static void main(String ... v) {
 		String url = "http://clien.net/cs2/bbs/board.php?bo_table=park";
-		ClienAllPark clien = new ClienAllPark(url);
+		url = "https://www.clien.net/service/board/park";	// New Clien
+//		ClienAllPark clien = new ClienAllPark(url);
+		NewClienPark clien = new NewClienPark(url);
 		
 //		RtBbsProcess test = new RtBbsProcess("clien.park", clien, clien);
 		RtBbsProcess test = new RtBbsProcess(clien);
 		List<DbbsTitleLine> lstExtAnchor = test.procExtAnchorList();
 		
-		lstExtAnchor = lstExtAnchor.subList(0, 10) ;
+		System.out.println("----------<NEW>----------");
+		int i = 0;
+		for(DbbsTitleLine dtl : lstExtAnchor) {
+			System.out.println(i++ + "\t" + dtl);
+		}
+		
+		
+//		lstExtAnchor = lstExtAnchor.subList(0, 10) ;
 		test.procSummarizeDoc(lstExtAnchor);
+		
+		
 	}
 }
