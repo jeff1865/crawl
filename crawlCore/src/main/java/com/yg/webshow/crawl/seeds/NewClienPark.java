@@ -87,6 +87,7 @@ public class NewClienPark implements IDocWrapper {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+			// IMG in Posted Contents
 			Elements imgs = doc.select("div[class=post-article fr-view] img[src]");
 			
 			Iterator<Element> itrImgs = imgs.iterator();
@@ -95,6 +96,16 @@ public class NewClienPark implements IDocWrapper {
 				String imgUrl = img.attr("abs:src");
 				wdb.getImgUrl().add(imgUrl) ;
 			}
+			
+			// IMG in Attached
+			imgs = doc.select("div[class=attached-image] img[src]");
+			itrImgs = imgs.iterator();
+			while(itrImgs.hasNext()) {
+				Element img = itrImgs.next();
+				String imgUrl = img.attr("abs:src");
+				wdb.getImgUrl().add(imgUrl) ;
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -123,7 +134,7 @@ public class NewClienPark implements IDocWrapper {
 			System.out.println(i++ + "\t" + dtl);
 		}
 		
-		WebDocBbs content = test.getContent("https://www.clien.net/service/board/park/10713401");
+		WebDocBbs content = test.getContent("https://www.clien.net/service/board/park/10720251");
 		System.out.println("Contents >" + content);
 	}
 

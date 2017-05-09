@@ -82,6 +82,12 @@ public class RtBbsProcess {
 	
 	private void procSummarizeDoc(List<DbbsTitleLine> lstNewLines) {
 		for(DbbsTitleLine dtl : lstNewLines) {
+			try {
+				Thread.sleep((long)(Math.random() * 2000));
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			
 			String url = dtl.getUrl();
 			
 			WebDocBbs content = this.docWrapper.getContent(url);
@@ -100,8 +106,12 @@ public class RtBbsProcess {
 				for(String murl : imgUrl) {
 					String postNo = dtl.getNo();
 					try {
-						String filename = postNo + "_" + (i++) + ".jpg";
-						FileDownloader.downloadFile(murl, "/Users/1002000/dev/temp20/" + filename);
+						String imgType = ".jpg";
+						if(murl.contains(".png") || murl.contains(".PNG")) imgType = ".png";
+						else if(murl.contains(".gif") || murl.contains("GIF")) imgType = ".gif";
+						
+						String filename = postNo + "_" + (i++) + imgType;
+						FileDownloader.downloadFile(murl, "/home/jeff/dev/image/" + filename);
 						Log.info("Download completed .. " + filename);
 					} catch (Exception e) {
 						e.printStackTrace();
