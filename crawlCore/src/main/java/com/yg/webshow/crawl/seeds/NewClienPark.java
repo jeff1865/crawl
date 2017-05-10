@@ -79,7 +79,9 @@ public class NewClienPark implements IDocWrapper {
 			
 			contents = doc.select("div[class=post-article fr-view]").html();
 			wdb.setContentsHtml(contents);
-					
+			System.out.println("htmlContents ---------->\n" + contents + "\n-------------" );
+			
+			
 			String contTime = doc.select("div.post-time").text();
 			SimpleDateFormat df = new SimpleDateFormat(this.getDateFormat());
 			try {
@@ -87,9 +89,8 @@ public class NewClienPark implements IDocWrapper {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-			// IMG in Posted Contents
-			Elements imgs = doc.select("div[class=post-article fr-view] img[src]");
-			
+			// IMG in Attached
+			Elements imgs = doc.select("div[class=attached-image] img[src]");
 			Iterator<Element> itrImgs = imgs.iterator();
 			while(itrImgs.hasNext()) {
 				Element img = itrImgs.next();
@@ -97,14 +98,16 @@ public class NewClienPark implements IDocWrapper {
 				wdb.getImgUrl().add(imgUrl) ;
 			}
 			
-			// IMG in Attached
-			imgs = doc.select("div[class=attached-image] img[src]");
+			// IMG in Posted Contents
+			imgs = doc.select("div[class=post-article fr-view] img[src]");
 			itrImgs = imgs.iterator();
 			while(itrImgs.hasNext()) {
 				Element img = itrImgs.next();
 				String imgUrl = img.attr("abs:src");
 				wdb.getImgUrl().add(imgUrl) ;
 			}
+			
+			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -134,7 +137,10 @@ public class NewClienPark implements IDocWrapper {
 			System.out.println(i++ + "\t" + dtl);
 		}
 		
-		WebDocBbs content = test.getContent("https://www.clien.net/service/board/park/10720251");
+		String testUrl = "https://www.clien.net/service/board/park/10720251";
+		testUrl = "https://www.clien.net/service/board/park/10719290";
+		
+		WebDocBbs content = test.getContent(testUrl);
 		System.out.println("Contents >" + content);
 	}
 

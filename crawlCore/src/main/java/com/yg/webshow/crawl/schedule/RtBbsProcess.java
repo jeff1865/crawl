@@ -23,19 +23,11 @@ import com.yg.webshow.crawl.webdoc.template.WebDocBbsList;
 public class RtBbsProcess {
 	
 	private int procId ;
+	private final String imageDir = "/Users/1002000/dev/temp20/"; 
 	
-//	private IBbsContents bbsContents = null;
-//	private IBbsList bbsList = null;
 	private RtCrawlTable rtCrawlTable  = null; 
 	private IDocWrapper docWrapper = null;
-	
-//	public RtBbsProcess(String seedId, IBbsContents bbsContents, IBbsList bbsList) {
-//		this.seedId = seedId ;
-//		this.rtCrawlTable = new RtCrawlTable(SysConf.createNewHbaseConn());
-//		this.bbsContents = bbsContents ;
-//		this.bbsList = bbsList ;
-//	}
-	
+		
 	public RtBbsProcess(IDocWrapper docWrapper) {
 		this.rtCrawlTable = new RtCrawlTable(SysConf.createNewHbaseConn());
 		this.docWrapper = docWrapper ;
@@ -111,7 +103,7 @@ public class RtBbsProcess {
 						else if(murl.contains(".gif") || murl.contains("GIF")) imgType = ".gif";
 						
 						String filename = postNo + "_" + (i++) + imgType;
-						FileDownloader.downloadFile(murl, "/home/jeff/dev/image/" + filename);
+						FileDownloader.downloadFile(murl, this.imageDir + filename);
 						Log.info("Download completed .. " + filename);
 					} catch (Exception e) {
 						e.printStackTrace();
