@@ -79,9 +79,7 @@ public class NewClienPark implements IDocWrapper {
 			
 			contents = doc.select("div[class=post-article fr-view]").html();
 			wdb.setContentsHtml(contents);
-			System.out.println("htmlContents ---------->\n" + contents + "\n-------------" );
-			
-			
+						
 			String contTime = doc.select("div.post-time").text();
 			SimpleDateFormat df = new SimpleDateFormat(this.getDateFormat());
 			try {

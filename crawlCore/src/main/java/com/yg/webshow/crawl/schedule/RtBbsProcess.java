@@ -92,24 +92,24 @@ public class RtBbsProcess {
 					content.getContentsText(), 
 					content.getContentsHtml(),
 					imgUrl);
-			
-			if(imgUrl != null && imgUrl.size() > 0) {
-				int i = 0;
-				for(String murl : imgUrl) {
-					String postNo = dtl.getNo();
-					try {
-						String imgType = ".jpg";
-						if(murl.contains(".png") || murl.contains(".PNG")) imgType = ".png";
-						else if(murl.contains(".gif") || murl.contains("GIF")) imgType = ".gif";
-						
-						String filename = postNo + "_" + (i++) + imgType;
-						FileDownloader.downloadFile(murl, this.imageDir + filename);
-						Log.info("Download completed .. " + filename);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
+			// Download image to local dir
+//			if(imgUrl != null && imgUrl.size() > 0) {
+//				int i = 0;
+//				for(String murl : imgUrl) {
+//					String postNo = dtl.getNo();
+//					try {
+//						String imgType = ".jpg";
+//						if(murl.contains(".png") || murl.contains(".PNG")) imgType = ".png";
+//						else if(murl.contains(".gif") || murl.contains("GIF")) imgType = ".gif";
+//						
+//						String filename = postNo + "_" + (i++) + imgType;
+//						FileDownloader.downloadFile(murl, this.imageDir + filename);
+//						Log.info("Download completed .. " + filename);
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
 		}
 	}
 	
@@ -132,7 +132,7 @@ public class RtBbsProcess {
 		
 		
 //		lstExtAnchor = lstExtAnchor.subList(0, 10) ;
-		test.procSummarizeDoc(lstExtAnchor);
+//		test.procSummarizeDoc(lstExtAnchor);
 		
 		
 	}

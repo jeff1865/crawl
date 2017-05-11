@@ -27,8 +27,8 @@ public class FileDownloader {
 		String reasonPhrase = response.getStatusLine().getReasonPhrase();
 		int statusCode = response.getStatusLine().getStatusCode();
 
-		System.out.println(String.format("statusCode: %d", statusCode));
-		System.out.println(String.format("reasonPhrase: %s", reasonPhrase));
+//		System.out.println(String.format("statusCode: %d", statusCode));
+//		System.out.println(String.format("reasonPhrase: %s", reasonPhrase));
 
 		HttpEntity entity = response.getEntity();
 		InputStream is = entity.getContent();
