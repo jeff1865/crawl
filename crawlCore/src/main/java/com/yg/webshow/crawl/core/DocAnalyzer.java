@@ -58,26 +58,28 @@ public class DocAnalyzer {
 			.iterations(iterations) // # iterations to train
 			.learningRate(0.025) //
 			.minLearningRate(1e-3) // learning rate decays wrt # words. floor learning
-			.negativeSample(10) // sample size 10 words
+			.negativeSample(100) // sample size 10 words
 			.iterate(iter) //
 			.tokenizerFactory(tokenizer)
 			.build();
 		vec.fit();
 		
 		// Write word vectors
-		WordVectorSerializer.writeWordVectors(vec, "/Users/1002000/dev/temp_doc/res_" + System.currentTimeMillis() + ".txt");
+		WordVectorSerializer.writeWordVectors(vec, "/Users/1002000/temp_han/res_" + System.currentTimeMillis() + ".txt");
 
-		log.info("Closest Words:");
-		Collection<String> lst = vec.wordsNearest("일본", 10);
-		System.out.println(lst);	
+//		log.info("Closest Words:");
+		Collection<String> lst = vec.wordsNearest("드래곤", 10);
+		System.out.println("\'Dragon\' sim ---> "+ lst);	
 		
 		// Server doesn't work
 //		UiServer server = UiServer.getInstance();
 //		System.out.println("Started on port " + server.getPort());
 		
-		double cosSim = vec.similarity("선생", "일본");
-		System.out.println(cosSim);
-				
+		double cosSim = vec.similarity("베리", "서연");
+		System.out.println("cosine sim --->" + cosSim);
+		
+//		System.out.println("AA--");
+		
 		// Model Visualization
 		log.info("Plot TSNE....");
 		BarnesHutTsne tsne = new BarnesHutTsne.Builder()
@@ -90,7 +92,7 @@ public class DocAnalyzer {
 			.normalize(true)
 //			.usePca(false)
 			.build();
-		vec.lookupTable().plotVocab(tsne, 20, new File("/Users/1002000/dev/temp_doc/flotvoca1.txt"));
+		vec.lookupTable().plotVocab(tsne, 20, new File("/Users/1002000/temp_han/flotvoca2.txt"));
 	}
 	
 	public static void main(String ... v) {
@@ -98,7 +100,7 @@ public class DocAnalyzer {
 //		TokenizerFactory kt = new KoreanTokenizerFactory();
 //		kt.setTokenPreProcessor(new CommonPreprocessor());
 		
-		String file = "/Users/1002000/dev/temp_doc/aaa.txt";
+		String file = "/Users/1002000/sample_nn.txt";
 		try {
 			System.out.println("Processing File ..");
 			process(file);
