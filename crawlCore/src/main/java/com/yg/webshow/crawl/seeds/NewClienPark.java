@@ -33,7 +33,7 @@ public class NewClienPark implements IDocWrapper {
 		try {
 			Document doc = Jsoup.connect(this.seedUrl).get();
 			
-			Elements list = doc.select("div[class=board-list post-list] > div[class=list-row] > div[class=item]");
+			Elements list = doc.select("div[class=board-list post-list] > div[class=list-row symph-row] > div[class=item]");
 			
 			Iterator<Element> itrElem = list.iterator();
 			DbbsTitleLine line = null;
@@ -130,6 +130,7 @@ public class NewClienPark implements IDocWrapper {
 		NewClienPark test = new NewClienPark("https://www.clien.net/service/board/park");
 		WebDocBbsList list = test.getList();
 		
+		System.out.println("List of Titles ..");
 		int i = 0;
 		for(DbbsTitleLine dtl : list.getTitleLines()){ 
 			System.out.println(i++ + "\t" + dtl);
