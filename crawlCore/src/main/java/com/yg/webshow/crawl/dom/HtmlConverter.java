@@ -8,7 +8,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.yg.webshow.crawl.data.CrawlDataExBo;
-import com.yg.webshow.crawl.seeds.NewClienPark;
+import com.yg.webshow.crawl.seeds.sample.clien.NewClienPark;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbs;
 
 public class HtmlConverter {

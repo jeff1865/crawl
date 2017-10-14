@@ -1,4 +1,4 @@
-package com.yg.webshow.crawl.seeds;
+package com.yg.webshow.crawl.seeds.sample;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,6 +10,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.yg.webshow.crawl.seeds.IDocWrapper;
+import com.yg.webshow.crawl.webdoc.template.DComment;
 import com.yg.webshow.crawl.webdoc.template.DbbsTitleLine;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbs;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbsList;
@@ -103,5 +105,11 @@ public class ClienAllPark implements IDocWrapper {
 	@Override
 	public String getDateFormat() {
 		return "yyyy-MM-dd HH:mm:ss";
+	}
+
+	@Override
+	public List<DComment> getComments(String url) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

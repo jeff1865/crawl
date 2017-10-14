@@ -1,17 +1,30 @@
-package com.yg.webshow.crawl.seeds;
+package com.yg.webshow.crawl.seeds.sample.clien;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yg.webshow.crawl.seeds.IDocWrapper;
+import com.yg.webshow.crawl.webdoc.template.DComment;
 import com.yg.webshow.crawl.webdoc.template.DbbsTitleLine;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbs;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbsList;
@@ -105,7 +118,15 @@ public class NewClienPark implements IDocWrapper {
 				wdb.getImgUrl().add(imgUrl) ;
 			}
 			
+			Elements metaUrl = doc.select("html > head > meta[property=url]");
+			String baseUrl = metaUrl.attr("content");
 			
+			String postId = baseUrl.substring(baseUrl.lastIndexOf("/") + 1);
+			
+//			System.out.println("BaseURL > " + baseUrl);
+//			System.out.println("PostID > " + postId);
+			
+			this.getComments(postId) ;
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -113,7 +134,53 @@ public class NewClienPark implements IDocWrapper {
 		
 		return wdb;
 	}
-
+	
+	@Override
+	public List<DComment> getComments(String url) {
+		return null;
+	}
+	
+	// postId sample : 11306455
+	private ClienCommentData[] getInternalComments(String postId) {
+		try {
+			HttpClient client = HttpClientBuilder.create().build();
+			String targetUrl = "https://www.clien.net/service/api/board/park/" + postId + "/comment?param=";
+			String dataParam = URLEncoder.encode("{\"order\":\"date\",\"po\":0,\"ps\":100}", "UTF-8");
+			targetUrl = targetUrl + dataParam ;
+			
+			System.out.println("URL >" + targetUrl);
+			
+			HttpGet request = new HttpGet(targetUrl);
+			
+			HttpResponse response = client.execute(request);
+			int statusCode = response.getStatusLine().getStatusCode();
+			
+			if(statusCode == 200) {
+				HttpEntity resEntity = response.getEntity();
+				String strResponse = EntityUtils.toString(resEntity, "UTF-8");
+				System.out.println("Response :" + strResponse);
+				
+				ObjectMapper mapper = new ObjectMapper();
+				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+				
+				ClienCommentData[] lstComment = mapper.readValue(strResponse, ClienCommentData[].class);
+							
+				System.out.println("Comments -----------------");
+				int i = 0;
+				for(ClienCommentData ccd : lstComment) {
+					System.out.println(i++ + "\t" + ccd.getComment());
+				}
+				
+				return lstComment ;
+			} else {
+				System.out.println("Invalid Code from CERT :" + statusCode);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null ;
+	}
+	
 	@Override
 	public String getSeedId() {
 		return this.seedId;
@@ -139,11 +206,21 @@ public class NewClienPark implements IDocWrapper {
 		String testUrl = "https://www.clien.net/service/board/park/10720251";
 		testUrl = "https://www.clien.net/service/board/park/10719290";
 		testUrl = "https://www.clien.net/service/board/cm_car/11286165?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
-		
+		testUrl = "https://www.clien.net/service/board/park/11300075?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
 		
 		WebDocBbs content = test.getContent(testUrl);
 		System.out.println("----------------------");
 		System.out.println("Contents >" + content);
+		
+//		String url = "https://m.clien.net/service/api/board/park/11299273/comment?param=%7B%22order%22%3A%22date%22%2C%22po%22%3A0%2C%22ps%22%3A100%7D";
+//		try {
+//			System.out.println("URL->" + URLDecoder.decode(url, "UTF-8"));
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
+
+	
 
 }
