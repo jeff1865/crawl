@@ -118,15 +118,7 @@ public class NewClienPark implements IDocWrapper {
 				wdb.getImgUrl().add(imgUrl) ;
 			}
 			
-			Elements metaUrl = doc.select("html > head > meta[property=url]");
-			String baseUrl = metaUrl.attr("content");
 			
-			String postId = baseUrl.substring(baseUrl.lastIndexOf("/") + 1);
-			
-//			System.out.println("BaseURL > " + baseUrl);
-//			System.out.println("PostID > " + postId);
-			
-			this.getComments(postId) ;
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -137,7 +129,32 @@ public class NewClienPark implements IDocWrapper {
 	
 	@Override
 	public List<DComment> getComments(String url) {
-		return null;
+		List<DComment> lstComment = new ArrayList<DComment>() ;
+		
+		try {
+			Document doc = Jsoup.connect(url).get();
+			
+			Elements metaUrl = doc.select("html > head > meta[property=url]");
+			String baseUrl = metaUrl.attr("content");
+			
+			String postId = baseUrl.substring(baseUrl.lastIndexOf("/") + 1);
+			
+			ClienCommentData[] arrCmt = this.getInternalComments(postId);
+			
+			for(ClienCommentData cmt : arrCmt) {
+				DComment dc = new DComment();
+				dc.setAuthor(cmt.getMember().getUserId());
+				dc.setComment(cmt.getOriComment());
+//				dc.setStrDate(cmt.get`);
+				lstComment.add(dc) ;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return lstComment;
 	}
 	
 	// postId sample : 11306455
@@ -211,6 +228,13 @@ public class NewClienPark implements IDocWrapper {
 		WebDocBbs content = test.getContent(testUrl);
 		System.out.println("----------------------");
 		System.out.println("Contents >" + content);
+		
+		i = 0 ;
+		List<DComment> comments = test.getComments(testUrl) ;
+		for(DComment dc : comments) {
+			System.out.println(i++ + ">>>" + dc);
+		}
+		
 		
 //		String url = "https://m.clien.net/service/api/board/park/11299273/comment?param=%7B%22order%22%3A%22date%22%2C%22po%22%3A0%2C%22ps%22%3A100%7D";
 //		try {

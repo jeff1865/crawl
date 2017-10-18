@@ -53,7 +53,7 @@ public class RtCrawlTable extends AbstractTableEx {
 	private static final byte[] CQ_MEDIA_COUNT = Bytes.toBytes("mdc");
 	
 	private static final String PREFIX_MEDIA = "med_";
-	
+	private static final String PREFIX_COMMENT = "cmt_";
 	public static final String VAL_STATUS_INIT = "INIT";
 	public static final String VAL_STATUS_EXTDATA = "MERGED";
 	

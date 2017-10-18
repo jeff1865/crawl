@@ -8,6 +8,15 @@ public class DComment {
 	private String strDate ;
 	private Map<String, String> etc ;
 	
+	public String toString() {
+		StringBuffer sb = new StringBuffer() ;
+		sb.append("author=").append(this.author).append(",");
+		sb.append("comment=").append(this.comment).append(",");
+		sb.append("date=").append(this.strDate) ;
+		
+		return sb.toString() ;
+	}
+	
 	public String getAuthor() {
 		return author;
 	}
