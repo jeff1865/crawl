@@ -55,7 +55,8 @@ public class NewClienPark implements IDocWrapper {
 				line = new DbbsTitleLine();
 
 				String url = tag.select("div[class=list-title] > a[class=list-subject]").attr("abs:href");
-				line.setNo(url.substring(url.lastIndexOf("/") + 1));
+//				line.setNo(url.substring(url.lastIndexOf("/") + 1));
+				line.setNo(url.substring(url.lastIndexOf("/") + 1, url.indexOf("?")));
 				line.setUrl(url);
 				line.setTitle(tag.select("div[class=list-title] > a[class=list-subject]").text());
 				String authorName = tag.select("div[class=list-title] > div > a[class=dropdown-toggle nick]").text();
