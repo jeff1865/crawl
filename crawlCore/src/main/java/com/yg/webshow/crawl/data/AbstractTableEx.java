@@ -21,6 +21,10 @@ public abstract class AbstractTableEx {
 		this.conn = conn ;
 	}
 	
+	protected AbstractTableEx() {
+		;
+	}
+	
 	protected void putData(Put put) {
 		Table table = null ;
 		try {

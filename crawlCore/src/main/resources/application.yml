@@ -1,0 +1,15 @@
+spring:
+  profiles: local
+logging:
+  config: classpath:logback-spring.xml
+hbase:
+  master: localhost
+  quorum: localhost 
+---
+spring:
+  profiles: live
+logging:
+  config: classpath:logback-spring.xml
+hbase:
+  master: localhost
+  quorum: localhost 

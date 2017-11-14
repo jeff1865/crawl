@@ -3,44 +3,33 @@ package com.yg.webshow.crawl.data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellScanner;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
-import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.yg.webshow.crawl.core.SysConf;
-
-/**
- * RowKey : [site_id]_[reversed_post_no]
- * CQ : timestamp
- * 		url
- * 		anchor_title
- * 		contents
- * 		cont_title
- * 		crawl_status
- * 		author
- * 		doc_ts
- * 		media_n
- */
-public class RtCrawlTable extends AbstractTableEx {
-	private static Logger log = Logger.getLogger(RtCrawlTable.class);
-			
+@Component
+public class MrCrawlTable extends AbstractTableEx {
+	private static Logger log = Logger.getLogger(MrCrawlTable.class);
+	
+	@Autowired private HbaseSystem hbaseSystem = null ;
+	
 	private static final byte[] TABLE_NAME = Bytes.toBytes("rtCrawl"); 
 	private static final byte[] CF = Bytes.toBytes("cwl");
 	
@@ -61,8 +50,19 @@ public class RtCrawlTable extends AbstractTableEx {
 	public static final String VAL_STATUS_INIT = "INIT";
 	public static final String VAL_STATUS_EXTDATA = "MERGED";
 	
-	public RtCrawlTable(Connection conn) {
-		super(conn);
+	public MrCrawlTable() {
+		;
+	}
+	
+	private void init() {
+		if(super.conn == null) {
+			try {
+				super.conn = ConnectionFactory.createConnection(this.hbaseSystem.createConfig()) ;
+				log.info("Successfully connection established ..");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private byte[] createRowKey(String siteId, int postNo) {
@@ -141,6 +141,7 @@ public class RtCrawlTable extends AbstractTableEx {
 	
 	
 	public List<CrawlDataExBo> getLatest(int topN, String status) {
+		this.init();
 		ArrayList<CrawlDataExBo> res = new ArrayList<CrawlDataExBo>();
 		
 		Scan scan = new Scan();
@@ -209,24 +210,5 @@ public class RtCrawlTable extends AbstractTableEx {
 		// TODO Auto-generated method stub
 		return TABLE_NAME;
 	}
-	
-	public static void main(String ... v) {
-		System.out.println("Run ...");
-		RtCrawlTable test = new RtCrawlTable(SysConf.createNewHbaseConn());
-		byte[] createdRowKey = test.createRowKey("1", 1399);
-		
-		System.out.println("Key --> " + new String(createdRowKey));
-		
-//		test.addInitData("19", 223, "tabaco", "Fire Potato~", System.currentTimeMillis(), "http://www.naver.com");
-		
-		int i = 0;
-		List<CrawlDataExBo> latest = test.getLatest(1, RtCrawlTable.VAL_STATUS_INIT);
-		for(CrawlDataBo cdb : latest) {
-			System.out.println(i++ + " -> " + cdb);
-		}
-		
-		System.out.println("---------------");
-		CrawlDataExBo crawlData = test.getCrawlData("clien.park", 10714694) ;
-		System.out.println("GetData -->" + crawlData);
-	}
+
 }

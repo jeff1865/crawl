@@ -2,7 +2,7 @@ package com.yg.webshow.crawl.schedule;
 
 public class CrawlJobCtrManager {
 	
-	public CrawlJobCtrManager() {
+	public CrawlJobCtrManager(String siteId) {
 		;
 	}
 	
