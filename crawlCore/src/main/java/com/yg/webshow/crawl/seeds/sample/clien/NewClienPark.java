@@ -143,8 +143,9 @@ public class NewClienPark implements IDocWrapper {
 			ClienCommentData[] arrCmt = this.getInternalComments(postId);
 			
 			for(ClienCommentData cmt : arrCmt) {
+				System.out.println("-->" + cmt);
 				DComment dc = new DComment();
-				dc.setAuthor(cmt.getMember().getUserId());
+				if(cmt.getMember() != null) dc.setAuthor(cmt.getMember().getUserId());
 				dc.setComment(cmt.getOriComment());
 //				dc.setStrDate(cmt.get`);
 				lstComment.add(dc) ;
