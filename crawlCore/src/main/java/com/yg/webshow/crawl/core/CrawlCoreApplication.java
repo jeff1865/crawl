@@ -57,12 +57,29 @@ public class CrawlCoreApplication implements CommandLineRunner {
 		
 	}
 	
+	private void printData() {
+		DefaultHTable defaultHtable = new DefaultHTable();
+		defaultHtable.setTableFactory(this.tableFactory);
+				
+		CrawlTable crawlTable = new CrawlTable(defaultHtable) ;
+		CrawlRow data = crawlTable.getData("clien.park", "2136769918") ;
+		
+		System.out.println("Single! -> " + data);
+		
+		List<CrawlRow> latestData = crawlTable.getLatestData(2, "INIT") ;
+		for(CrawlRow cr : latestData) {
+			System.out.println("LD --> " + cr);
+		}
+	}
+	
+	
 	@Override
 	public void run(String... args) throws Exception {
 		this.printProperties();
 		
 		this.printDataTopN();
 		
+		this.printData();
 //		this.printTonN();
 				
 		// TODO Auto-generated method stub

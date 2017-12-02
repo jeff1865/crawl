@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -15,39 +16,83 @@ public class DefaultHTable extends HbaseControl {
 	public DefaultHTable() {
 		;
 	}
-	
-	//TODO need to Action ( functional interface )
-	public void execute() {
 		
-	}
-	
-	public void put(TableName table, List<Put> puts) {
-		//TODO need to implements
-		;
+	public void put(TableName tableName, List<Put> puts) {
+		this.invoke(tableName, new TableFunction<Integer>() {
+			@Override
+			public Integer invoke(Table table) throws Throwable {
+				table.put(puts);
+				return 0;
+			}
+			
+		}) ;
 	}
 	
 	public <T> List<T> getData(TableName tableName, byte[] family, final ResultMapper<T> ob) {
 		List<T> resData = new ArrayList<>();
 		
-		Table table = null;
-		try {
-			table = this.getTable(tableName);
-			
-			Scan scan = new Scan() ;
-			ResultScanner rs = table.getScanner(scan) ;
-			
-			for(Result result : rs) {
-				resData.add(ob.convert(result)) ;
-			}
-						
-		} catch(Exception e) {
-			e.printStackTrace();
-		} finally {
-			if(table != null) 
-				this.releaseTable(table);
-		}
+		return this.invoke(tableName, new TableFunction<List<T>>() {
+			@Override
+			public List<T> invoke(Table table) throws Throwable {
 				
-		return resData ;
+				Scan scan = new Scan() ;
+				ResultScanner rs = table.getScanner(scan) ;
+				
+				for(Result result : rs) {
+					resData.add(ob.convert(result)) ;
+				}
+				
+				return resData;
+			}
+		});
+	}
+	
+	public <T> List<T> getData(TableName tableName, byte[] family, final ResultMapper<T> ob, final Scan scan) {
+		List<T> resData = new ArrayList<>();
+		
+		return this.invoke(tableName, new TableFunction<List<T>>() {
+			@Override
+			public List<T> invoke(Table table) throws Throwable {
+				
+//				Scan scan = new Scan() ;
+				ResultScanner rs = table.getScanner(scan) ;
+				
+				for(Result result : rs) {
+					resData.add(ob.convert(result)) ;
+				}
+				
+				return resData;
+			}
+		});
+	}
+	
+	public <T> T getData(TableName tableName, byte[] family, final ResultMapper<T> ob, byte[] rowKey) {
+		return this.invoke(tableName, new TableFunction<T>() {
+			@Override
+			public T invoke(Table table) throws Throwable {
+				
+				Get get = new Get(rowKey);
+				Result rs = table.get(get) ;
+				
+				return ob.convert(rs);
+			}
+		});
+		
+	}
+	
+	public <T> T invoke(TableName tableName, TableFunction<T> func) {
+		
+		Table table = this.getTable(tableName);
+		
+		try {
+			return func.invoke(table) ;
+		} catch (Throwable e) {
+			e.printStackTrace();
+			throw new HbaseException(e.getMessage(), e);
+		} finally {
+			this.releaseTable(table);
+		}
+	
 	}
 	
 	private Table getTable(TableName tableName) {

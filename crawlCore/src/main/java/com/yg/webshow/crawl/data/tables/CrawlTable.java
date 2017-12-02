@@ -1,12 +1,19 @@
 package com.yg.webshow.crawl.data.tables;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.PageFilter;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.yg.webshow.crawl.data.base.DefaultHTable;
@@ -80,6 +87,66 @@ public class CrawlTable {
 			
 		} ;
 		
+	}
+	
+	//TODO need to consider Reflection!!
+	public void upsertData(CrawlRow crawlRow) {
+		;
+	}
+	
+	public void upsertData(List<CrawlRow> crawlRows) {
+		List<Put> puts = new ArrayList<Put>();
+		
+		for(CrawlRow crawlRow : crawlRows) {
+			Put put = new Put(this.createRowKey(crawlRow.getSiteId(), crawlRow.getPostId()));
+			put.addColumn(CF, CQ_AUTHOR, Bytes.toBytes(crawlRow.getAuthor()));
+			put.addColumn(CF, CQ_ANCHOR_TITLE, Bytes.toBytes(crawlRow.getAnchorTitle()));
+			put.addColumn(CF, CQ_URL, Bytes.toBytes(crawlRow.getUrl()));
+			put.addColumn(CF, CQ_DOC_TS, Bytes.toBytes(crawlRow.getDocTs()));
+			put.addColumn(CF, CQ_STATUS, Bytes.toBytes(VAL_STATUS_INIT));
+			
+			
+			
+			
+			puts.add(put) ;
+		}
+		
+		this.defaultHtable.put(TABLE_NAME, puts);;
+	}
+	
+	private byte[] createRowKey(String siteId, String postId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(siteId).append("_");
+		sb.append(postId);
+		
+		return Bytes.toBytes(sb.toString()) ;
+	}
+	
+	private byte[] createRowKey(String siteId, int postNo) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(siteId).append("_");
+		sb.append(Integer.MAX_VALUE - postNo);
+		
+		return Bytes.toBytes(sb.toString()) ;
+	}
+	
+	public CrawlRow getData(String siteId, String postId) {
+		return this.defaultHtable.getData(TABLE_NAME, CF, resultMapper, this.createRowKey(siteId, postId));
+	}
+	
+	
+	public List<CrawlRow> getLatestData(int topN, String status) {
+		Scan scan = new Scan();
+		scan.addFamily(CF);
+		FilterList fList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+		if(status != null) {
+			fList.addFilter(new SingleColumnValueFilter(CF,
+					CQ_STATUS, CompareOp.EQUAL, Bytes.toBytes(status)));
+		}
+		fList.addFilter(new PageFilter(topN));
+		scan.setFilter(fList) ;
+		
+		return this.defaultHtable.getData(TABLE_NAME, CF, this.resultMapper, scan) ;
 	}
 	
 	public List<CrawlRow> getAllData() {
