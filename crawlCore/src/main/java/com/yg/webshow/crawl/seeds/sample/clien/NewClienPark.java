@@ -226,6 +226,8 @@ public class NewClienPark implements IDocWrapper {
 		testUrl = "https://www.clien.net/service/board/park/10719290";
 		testUrl = "https://www.clien.net/service/board/cm_car/11286165?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
 		testUrl = "https://www.clien.net/service/board/park/11300075?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
+		testUrl = "https://www.clien.net/service/board/park/11503578?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
+		testUrl = "https://www.clien.net/service/board/cm_car/11504678?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
 		
 		WebDocBbs content = test.getContent(testUrl);
 		System.out.println("----------------------");

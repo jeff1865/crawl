@@ -78,6 +78,13 @@ public class PooledTableFactory implements TableFactory {
     	return this.connection ;
     }
     
+    public DefaultHTable getDefaultTable() {
+    	DefaultHTable defaultTable = new DefaultHTable();
+    	defaultTable.setTableFactory(this);
+//    	defaultTable.setConfiguration(configuration);
+    	
+    	return defaultTable ;
+    }
     
 	@Override
 	public Table getTable(TableName tableName) {

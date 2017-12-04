@@ -14,6 +14,11 @@ public class CrawlJobScheduler {
 		;
 	}
 	
+	public CrawlJob createCrawlJob() {
+		return null ;
+	}
+	
+	
 	public void startSystem() {
 		for(int i= 0 ; i<100;i++) {
 			System.out.println("Main Process :" + i);

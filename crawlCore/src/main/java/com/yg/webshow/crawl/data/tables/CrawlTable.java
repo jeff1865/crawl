@@ -91,7 +91,10 @@ public class CrawlTable {
 	
 	//TODO need to consider Reflection!!
 	public void upsertData(CrawlRow crawlRow) {
-		;
+		List<CrawlRow> data = new ArrayList<CrawlRow>(1);
+		data.add(crawlRow);
+		
+		upsertData(data);
 	}
 	
 	public void upsertData(List<CrawlRow> crawlRows) {
@@ -104,10 +107,7 @@ public class CrawlTable {
 			put.addColumn(CF, CQ_URL, Bytes.toBytes(crawlRow.getUrl()));
 			put.addColumn(CF, CQ_DOC_TS, Bytes.toBytes(crawlRow.getDocTs()));
 			put.addColumn(CF, CQ_STATUS, Bytes.toBytes(VAL_STATUS_INIT));
-			
-			
-			
-			
+						
 			puts.add(put) ;
 		}
 		
@@ -117,7 +117,7 @@ public class CrawlTable {
 	private byte[] createRowKey(String siteId, String postId) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(siteId).append("_");
-		sb.append(postId);
+		sb.append(Integer.MAX_VALUE - Integer.parseInt(postId));
 		
 		return Bytes.toBytes(sb.toString()) ;
 	}
