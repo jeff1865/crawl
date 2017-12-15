@@ -57,13 +57,20 @@ public class CrawlTable {
 			@Override
 			public CrawlRow convert(Result rs) {
 				CrawlRow cdb  = new CrawlRow() ; 
+				String rowKey = Bytes.toString(rs.getRow());
+				System.out.println("rowKey -> " + rowKey);
+				if(rowKey != null) { 
+					cdb.setPostId(String.valueOf(Integer.MAX_VALUE - Integer.parseInt(rowKey.split("_")[1])));
+					cdb.setSiteId(rowKey.split("_")[0]);
+				}
 				
 				while(rs.advance()) {
 					Cell cell = rs.current();
 					
-					if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_SITE_ID)) {
-						cdb.setSiteId(new String(CellUtil.cloneValue(cell)));
-					} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_CONTENTS)) {
+//					if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_SITE_ID)) {
+//						cdb.setSiteId(new String(CellUtil.cloneValue(cell)));
+//					} else 
+					if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_CONTENTS)) {
 						cdb.setFilteredContents(new String(CellUtil.cloneValue(cell)));
 					} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_ANCHOR_TITLE)) {
 						cdb.setAnchorTitle(new String(CellUtil.cloneValue(cell)));;

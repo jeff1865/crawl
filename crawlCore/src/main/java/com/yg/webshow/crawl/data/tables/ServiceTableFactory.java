@@ -28,4 +28,12 @@ public class ServiceTableFactory {
 		return new CrawlTable(defaultHtable);
 	}
 	
+	@Bean
+	public ExtDocTable getExDocTable() {
+		log.info("Create ExDoclTable : " + cnt++ );
+		DefaultHTable defaultHtable = new DefaultHTable();
+		defaultHtable.setTableFactory(this.tableFactory);
+		return new ExtDocTable(defaultHtable);
+	}
+	
 }

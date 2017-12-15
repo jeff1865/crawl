@@ -3,6 +3,7 @@ package com.yg.webshow.crawl.webdoc.template;
 import java.util.Map;
 
 public class DComment {
+	private String id ;
 	private String author ;
 	private String comment ;
 	private String strDate ;
@@ -10,6 +11,7 @@ public class DComment {
 	
 	public String toString() {
 		StringBuffer sb = new StringBuffer() ;
+		sb.append("id=").append(this.id).append(";") ;
 		sb.append("author=").append(this.author).append(",");
 		sb.append("comment=").append(this.comment).append(",");
 		sb.append("date=").append(this.strDate) ;
@@ -40,6 +42,14 @@ public class DComment {
 	}
 	public void setEtc(Map<String, String> etc) {
 		this.etc = etc;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 }

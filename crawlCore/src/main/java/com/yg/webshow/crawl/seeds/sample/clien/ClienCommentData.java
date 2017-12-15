@@ -6,6 +6,7 @@ public class ClienCommentData {
 	private Member member ;
 	private long boardSn ;
 	private long commentSn ;
+	private String insertDate ;
 	
 	public String getComment() {
 		return comment;
@@ -36,5 +37,11 @@ public class ClienCommentData {
 	}
 	public void setCommentSn(long commentSn) {
 		this.commentSn = commentSn;
+	}
+	public String getInsertDate() {
+		return insertDate;
+	}
+	public void setInsertDate(String insertDate) {
+		this.insertDate = insertDate;
 	}
 }

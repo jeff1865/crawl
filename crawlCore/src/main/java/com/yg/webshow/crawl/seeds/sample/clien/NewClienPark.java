@@ -143,11 +143,12 @@ public class NewClienPark implements IDocWrapper {
 			ClienCommentData[] arrCmt = this.getInternalComments(postId);
 			
 			for(ClienCommentData cmt : arrCmt) {
-				System.out.println("-->" + cmt);
+//				System.out.println("-->" + cmt);
 				DComment dc = new DComment();
+				dc.setId(String.valueOf(cmt.getCommentSn()));
 				if(cmt.getMember() != null) dc.setAuthor(cmt.getMember().getUserId());
 				dc.setComment(cmt.getOriComment());
-//				dc.setStrDate(cmt.get`);
+				dc.setStrDate(cmt.getInsertDate());
 				lstComment.add(dc) ;
 			}
 		} catch (IOException e) {
@@ -227,17 +228,20 @@ public class NewClienPark implements IDocWrapper {
 		testUrl = "https://www.clien.net/service/board/cm_car/11286165?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
 		testUrl = "https://www.clien.net/service/board/park/11300075?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
 		testUrl = "https://www.clien.net/service/board/park/11503578?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
-		testUrl = "https://www.clien.net/service/board/cm_car/11504678?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
+		testUrl = "https://www.clien.net/service/board/park/11504954?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
+		testUrl = "https://www.clien.net/service/board/park/11508768?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
+		testUrl = "https://www.clien.net/service/board/park/11511280?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
 		
-		WebDocBbs content = test.getContent(testUrl);
-		System.out.println("----------------------");
-		System.out.println("Contents >" + content);
 		
-		i = 0 ;
-		List<DComment> comments = test.getComments(testUrl) ;
-		for(DComment dc : comments) {
-			System.out.println(i++ + ">>>" + dc);
-		}
+//		WebDocBbs content = test.getContent(testUrl);
+//		System.out.println("----------------------");
+//		System.out.println("Contents >" + content);
+		
+//		i = 0 ;
+//		List<DComment> comments = test.getComments(testUrl) ;
+//		for(DComment dc : comments) {
+//			System.out.println(i++ + "\t" + dc);
+//		}
 		
 		
 //		String url = "https://m.clien.net/service/api/board/park/11299273/comment?param=%7B%22order%22%3A%22date%22%2C%22po%22%3A0%2C%22ps%22%3A100%7D";
