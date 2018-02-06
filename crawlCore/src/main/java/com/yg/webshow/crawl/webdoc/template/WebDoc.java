@@ -16,10 +16,10 @@ public class WebDoc {
 	
 	public String toString() {
 		StringBuffer sb = new StringBuffer() ;
-		sb.append("docTitle:").append(this.docTitle).append("|");
-		sb.append("docDate:").append(this.docDate).append("|");
-		sb.append("contTitle:").append(this.contTitle).append("|");
-		sb.append("contents:").append(this.contentsText).append("|");
+		sb.append("docTitle:").append(this.docTitle).append("|\n");
+		sb.append("docDate:").append(this.docDate).append("|\n");
+		sb.append("contTitle:").append(this.contTitle).append("|\n");
+		sb.append("contents:").append(this.contentsText).append("|\n");
 		sb.append("htmlContents:").append(this.contentsHtml);
 		return sb.toString();
 	}

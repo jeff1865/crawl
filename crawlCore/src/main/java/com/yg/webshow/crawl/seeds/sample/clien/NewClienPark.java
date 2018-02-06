@@ -93,14 +93,15 @@ public class NewClienPark implements IDocWrapper {
 			
 			contents = doc.select("div[class=post-article fr-view]").html();
 			wdb.setContentsHtml(contents);
-						
-			String contTime = doc.select("div.post-time").text();
-			SimpleDateFormat df = new SimpleDateFormat(this.getDateFormat());
-			try {
-				wdb.setDocDate(df.parse(contTime));
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+			
+			//TODO need to change
+//			String contTime = doc.select("div.post-time").text();
+//			SimpleDateFormat df = new SimpleDateFormat(this.getDateFormat());
+//			try {
+//				wdb.setDocDate(df.parse(contTime));
+//			} catch (ParseException e) {
+//				e.printStackTrace();
+//			}
 			// IMG in Attached
 			Elements imgs = doc.select("div[class=attached-image] img[src]");
 			Iterator<Element> itrImgs = imgs.iterator();
@@ -244,13 +245,21 @@ public class NewClienPark implements IDocWrapper {
 //		}
 		
 		
-//		String url = "https://m.clien.net/service/api/board/park/11299273/comment?param=%7B%22order%22%3A%22date%22%2C%22po%22%3A0%2C%22ps%22%3A100%7D";
-//		try {
-//			System.out.println("URL->" + URLDecoder.decode(url, "UTF-8"));
-//		} catch (UnsupportedEncodingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		String url = "https://m.clien.net/service/api/board/park/11728363/comment?param=%7B%22order%22%3A%22date%22%2C%22po%22%3A0%2C%22ps%22%3A100%7D";
+		url= "https://www.clien.net/service/board/park/11728363";
+		try {
+			System.out.println("URL->" + URLDecoder.decode(url, "UTF-8"));
+			
+			i = 0 ;
+			List<DComment> comments = test.getComments(testUrl) ;
+			for(DComment dc : comments) {
+				System.out.println(i++ + "\t" + dc);
+			}
+			
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	

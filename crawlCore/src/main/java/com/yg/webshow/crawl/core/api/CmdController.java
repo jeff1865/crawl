@@ -13,8 +13,9 @@ import com.yg.webshow.crawl.data.tables.CrawlComment;
 import com.yg.webshow.crawl.data.tables.CrawlRow;
 import com.yg.webshow.crawl.data.tables.CrawlTable;
 import com.yg.webshow.crawl.data.tables.ExtDocTable;
-import com.yg.webshow.crawl.schedule.DefaultCrawlJob;
+import com.yg.webshow.crawl.schedule.DefaultBbsCrawlJob;
 import com.yg.webshow.crawl.seeds.sample.clien.NewClienPark;
+import com.yg.webshow.crawl.seeds.sample.clien.NewClienParkV2;
 
 @RestController
 public class CmdController {
@@ -23,10 +24,14 @@ public class CmdController {
 	@Autowired CrawlTable crawlTable = null ;
 	@Autowired ExtDocTable extDocTable = null ;
 	
-	DefaultCrawlJob crawlJob = null ;
+	DefaultBbsCrawlJob crawlJob = null ;
 	
 	public CmdController() {
 		;
+	}
+	
+	public String getWrappedDoc() {
+		return null ;
 	}
 	
 	@RequestMapping(value="/exec/clien/crawl", method=RequestMethod.GET)
@@ -34,8 +39,8 @@ public class CmdController {
 		log.info("Crawl Request Detected .. " + jobId);
 				
 		if(this.crawlJob == null) {
-			NewClienPark clien = new NewClienPark("https://www.clien.net/service/board/park");
-			crawlJob = new DefaultCrawlJob(clien, crawlTable, this.extDocTable);
+			NewClienParkV2 clien = new NewClienParkV2("https://www.clien.net/service/board/park");
+			crawlJob = new DefaultBbsCrawlJob(clien, crawlTable, this.extDocTable);
 		}
 		
 		int cnt = crawlJob.crawlNewPage(); 
@@ -49,6 +54,7 @@ public class CmdController {
 		
 		StringBuffer sb = new StringBuffer() ;
 		List<CrawlRow> latestData = this.crawlTable.getLatestData(topn, CrawlTable.VAL_STATUS_INIT) ;
+		log.info("Detected count of latest data : " + latestData.size());
 		
 		int i = 0;
 		for(CrawlRow crawlRow : latestData) {
@@ -64,8 +70,8 @@ public class CmdController {
 		log.info("Update Data Request Detected .. ");
 		
 		if(this.crawlJob == null) {
-			NewClienPark clien = new NewClienPark("https://www.clien.net/service/board/park");
-			crawlJob = new DefaultCrawlJob(clien, crawlTable, this.extDocTable);
+			NewClienParkV2 clien = new NewClienParkV2("https://www.clien.net/service/board/park");
+			crawlJob = new DefaultBbsCrawlJob(clien, crawlTable, this.extDocTable);
 		}
 		
 		return "Update Completed :" + this.crawlJob.updatePage() ;

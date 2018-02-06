@@ -1,4 +1,4 @@
-package com.yg.webshow.crawl.data;
+package xcom.yg.webshow.crawl.data;
 
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -16,6 +16,7 @@ import com.yg.webshow.crawl.core.SysConf;
  *      media_n -> type:value
  *      status
  */
+@Deprecated
 public class CrawlTable extends AbstractTableEx {
 	private static final byte[] TABLE_NAME = Bytes.toBytes("slCrawl"); 
 	private static final byte[] CF = Bytes.toBytes("cwl");

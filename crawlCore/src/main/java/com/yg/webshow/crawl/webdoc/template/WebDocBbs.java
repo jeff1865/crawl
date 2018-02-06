@@ -13,7 +13,7 @@ public class WebDocBbs extends WebDoc {
 		this.imgUrl = new ArrayList<String>();
 	}
 	
-	public List<?> getComment() {
+	public List<DComment> getComment() {
 		return comment;
 	}
 
@@ -32,9 +32,16 @@ public class WebDocBbs extends WebDoc {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(super.toString());
-		sb.append("|IMG:" + this.imgUrl.size() + "|");
+		sb.append("|\nIMG:" + this.imgUrl.size() + "|");
 		for(String url : this.imgUrl) {
 			sb.append(url).append(";");
+		}
+		sb.append("\nComment:\n");
+		if(this.comment != null) {
+			int i = 0;
+			for(DComment dc : this.comment) {
+				sb.append(i++ + "\t" + dc.toString()).append("\n");
+			}
 		}
 		
 		return sb.toString();

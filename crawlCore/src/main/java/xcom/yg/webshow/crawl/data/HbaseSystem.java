@@ -1,4 +1,4 @@
-package com.yg.webshow.crawl.data;
+package xcom.yg.webshow.crawl.data;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;

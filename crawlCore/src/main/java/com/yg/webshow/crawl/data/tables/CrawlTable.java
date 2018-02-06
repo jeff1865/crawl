@@ -95,6 +95,17 @@ public class CrawlTable {
 		} ;
 		
 	}
+		
+	public void updateContents(String siteId, String postId, String contents, String htmlContents) {
+		List<Put> puts = new ArrayList<Put>();
+		Put put = new Put(this.createRowKey(siteId, postId));
+		put.addColumn(CF, CQ_CONTENTS, Bytes.toBytes(contents));
+		put.addColumn(CF, CQ_HTML_CONTENTS, Bytes.toBytes(htmlContents));
+		put.addColumn(CF, CQ_STATUS, Bytes.toBytes(VAL_STATUS_EXTDATA));
+		
+		puts.add(put) ;
+		this.defaultHtable.put(TABLE_NAME, puts);;
+	}
 	
 	//TODO need to consider Reflection!!
 	public void upsertData(CrawlRow crawlRow) {

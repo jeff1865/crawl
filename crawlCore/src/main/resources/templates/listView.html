@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"></meta>
+<title>Crawled Data</title>
+</head>
+<body>
+<h1 th:text="${hello}"></h1>
+Merged Data View
+<table border="1">
+<tr th:each="cd : ${crawlList}">
+	<td th:text="${cd.siteId}"></td>
+	<td th:text="${cd.postId}"></td>
+	<td th:text="${cd.docDateTime}"></td>
+	<td>
+	<a th:href="@{|/xf/crawl/data/${cd.siteId}/${cd.postId}|}" th:text="${cd.anchorTitle}"></a>
+	</td>
+	<!-- <td th:text="${cd.docTitle}"></td>  -->
+	<td th:text="${cd.author}"></td>
+	<td th:text="${cd.status}"></td>
+	<!-- <td th:text="${cd.url}"></td> 
+	<td th:text="${cd.filteredContents}"></td>
+	<td th:text="${cd.htmlContents}"></td> -->
+</tr>
+
+</table>
+
+</body>
+</html>

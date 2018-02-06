@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"></meta>
+<title>Crawled Data</title>
+</head>
+<body>
+<h1 th:text="${hello}"></h1>
+Crawled Data Page
+
+<table border="1">
+	<tr><td th:text="${doctum.anchorTitle}"></td></tr>
+	<tr><td th:text="${doctum.author}"></td></tr>
+	<tr><td th:text="${doctum.filteredContents}"></td></tr>
+	<tr><td th:utext="${doctum.htmlContents}"></td></tr>
+</table>
+
+<table border="1">
+<tr th:each="cmt : ${comments}">
+	<td th:text="${cmt.commentNo}"></td>
+	<td th:text="${cmt.user}"></td>
+	<td th:text="${cmt.strTimestamp}"></td>
+	<td th:text="${cmt.contents}"></td>
+</tr>
+
+</table>
+
+</body>
+</html>

@@ -75,16 +75,31 @@ public class NewClienParkV2 implements IDocWrapper {
 		WebDocBbs wdb = new WebDocBbs();
 		try {
 			Document doc = Jsoup.connect(url).get();
-			String contTitle = doc.select("div[class=post_article fr-view]").toString();
-			System.out.println("Contents :" + contTitle);
-			wdb.setContTitle(contTitle);
+			
+//			wdb.setContentsHtml(doc.select("div[class=post_article fr-view]").toString());
+			wdb.setContentsHtml(doc.select("div[class=post_content]").toString());
+			wdb.setDocTitle(doc.select("title").text());
+			wdb.setContTitle(doc.select("h3[class=post_subject]").text());
+			wdb.setContentsText(doc.select("meta[name=description]").attr("content"));
+			
+			String postId = doc.select("input[id=boardSn]").attr("value");
+			String writer = doc.select("input[id=writer]").attr("value");
+			wdb.setComment(this.getComments(postId, writer));
+			
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 		
 		return wdb;
 	}
-
+	
+	private List<DComment> getComments(String postId, String writer) {
+		String url = "https://www.clien.net/service/board/park/" + postId + "/comment?order=date&po=0&ps=100&writer=" + writer ;
+		System.out.println("Comment URL >" + url);
+		return this.getComments(url) ;
+	}
+	
+	
 	@Override
 	public List<DComment> getComments(String url) {
 		List<DComment> lstComment = new ArrayList<DComment>() ;
@@ -94,15 +109,21 @@ public class NewClienParkV2 implements IDocWrapper {
 			
 			Elements metaUrl = doc.select("div[class=comment_row]");
 			int i = 0; 
+			DComment cmt = null ;
 			for(Element elem : metaUrl) {
 				String commentLine = elem.select("div[class=comment_view]").text() ;
 				String userId = elem.attr("data-author-id");
 				String strDate = elem.select("span[class=timestamp]").text() ;
+				String commentId = elem.attr("data-comment-sn");
 				
-				System.out.println(i ++ + "\t" + strDate + "\t" + userId + "\n\tComment >" + commentLine);
+				cmt = new DComment();
+				cmt.setAuthor(userId);
+				cmt.setStrDate(strDate);
+				cmt.setComment(commentLine);
+				cmt.setId(commentId);
+				
+				lstComment.add(cmt) ;
 			}
-			
-			
 		} catch(IOException e) {
 			e.printStackTrace(); 
 		}
@@ -131,13 +152,18 @@ public class NewClienParkV2 implements IDocWrapper {
 			System.out.println(i++ + "\t" + bts.toString());
 		}
 		
-		System.out.println("----------------------------------");
+		System.out.println("[Contents]----------------------------------");
 		String url = "https://www.clien.net/service/board/park/11534985?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
 		url = "https://www.clien.net/service/board/park/11535007?po=0&od=T31&sk=&sv=&category=&groupCd=&articlePeriod=default";
-		test.getContent(url) ;
+		url = "https://www.clien.net/service/board/park/11728586";
+		System.out.println("===> Cont :\n"+ test.getContent(url)) ;
+			
+//		List<DComment> comments = test.getComments("https://www.clien.net/service/board/park/11540127/comment?order=date&po=0&ps=100&writer=myclienidy") ;
+//		System.out.println("[Comment]----------------------------------");
+//		for(DComment comment : comments) {
+//			System.out.println(comment);
+//		}
 		
-		System.out.println("----------------------------------");
-		test.getComments("https://www.clien.net/service/board/park/11540127/comment?order=date&po=0&ps=100&writer=myclienidy") ;
 		
 	}
 

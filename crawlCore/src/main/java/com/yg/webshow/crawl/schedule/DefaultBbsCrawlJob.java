@@ -15,13 +15,13 @@ import com.yg.webshow.crawl.webdoc.template.DbbsTitleLine;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbs;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbsList;
 
-public class DefaultCrawlJob implements CrawlJob {
+public class DefaultBbsCrawlJob implements CrawlJob {
 	
 	private CrawlTable crawlTable = null ;
 	private IDocWrapper docWrapper = null ;
 	private ExtDocTable extDocTable = null ;
 	
-	public DefaultCrawlJob(IDocWrapper docWrapper, CrawlTable crawlTable, ExtDocTable extDocTable) {
+	public DefaultBbsCrawlJob(IDocWrapper docWrapper, CrawlTable crawlTable, ExtDocTable extDocTable) {
 		this.docWrapper = docWrapper ;
 		this.crawlTable = crawlTable ;
 		this.extDocTable = extDocTable ;
@@ -56,42 +56,49 @@ public class DefaultCrawlJob implements CrawlJob {
 		
 		return i ;
 	}
-
+	// 이거하고, 페이지 get을 구현하라!!
 	@Override
 	public int updatePage() {
 		// TODO Auto-generated method stub
-		List<CrawlRow> latestData = this.crawlTable.getLatestData(5, CrawlTable.VAL_STATUS_INIT) ;
+		List<CrawlRow> initData = this.crawlTable.getLatestData(5, CrawlTable.VAL_STATUS_INIT) ;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		int i = 0;
-		List<CrawlComment> lstCmt = new ArrayList<CrawlComment>();
-		for(CrawlRow crawlRow : latestData) {
-			System.out.println(i++ + "\tGetComments: " + crawlRow.getUrl());
+		List<CrawlComment> lstCmt = null ;
+		
+		for(CrawlRow crawlRow : initData) {
 			// process context
 			WebDocBbs content = this.docWrapper.getContent(crawlRow.getUrl()) ;
-			//TODO .... xxxxxxxxxx
-			content.getContentsText();
-			
+			System.out.println("--> Contents to be updated :" + crawlRow.toString());			
+			this.crawlTable.updateContents(crawlRow.getSiteId(), crawlRow.getPostId(), content.getContentsText(), 
+					content.getContentsHtml());
+
 			// process comment
-			List<DComment> comments = this.docWrapper.getComments(crawlRow.getUrl()) ;
-			for(DComment comment : comments) {
-				CrawlComment cc = new CrawlComment();
-				cc.setCommentNo(comment.getId());
-				cc.setContents(comment.getComment());
-				cc.setUser(comment.getAuthor());
-				try {
-					cc.setInitTime(df.parse(comment.getStrDate()).getTime());
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-				cc.setSiteId(crawlRow.getSiteId());
-				cc.setPostId(crawlRow.getPostId());
+			List<DComment> comments = content.getComment();
+			if(comments != null && comments.size() > 0) {
+				lstCmt = new ArrayList<CrawlComment>();
 				
-				lstCmt.add(cc);
+				for(DComment comment : comments) {
+					CrawlComment cc = new CrawlComment();
+					cc.setCommentNo(comment.getId());
+					cc.setContents(comment.getComment());
+					cc.setUser(comment.getAuthor());
+					try {
+						cc.setInitTime(df.parse(comment.getStrDate()).getTime());
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+					cc.setSiteId(crawlRow.getSiteId());
+					cc.setPostId(crawlRow.getPostId());
+					
+					lstCmt.add(cc);
+				}
+				
+				this.extDocTable.appendCommnetData(lstCmt);
 			}
 			
 		}
 				
-		this.extDocTable.appendCommnetData(lstCmt);
+
 				
 		return lstCmt.size();
 	}

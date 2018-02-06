@@ -12,11 +12,14 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.PageFilter;
+import org.apache.hadoop.hbase.filter.PrefixFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.yg.webshow.crawl.data.base.DefaultHTable;
 import com.yg.webshow.crawl.data.base.ResultMapper;
-
+/**
+ * rowKey : String siteId, int postId, int cmtId
+ */
 public class ExtDocTable {
 	public static final TableName TABLE_NAME = TableName.valueOf("extDoc");
 	
@@ -66,6 +69,16 @@ public class ExtDocTable {
 		
 	}
 	
+	public List<CrawlComment> getComments(String siteId, int postId) {
+		Scan scan = new Scan() ;
+		scan.addFamily(CF);
+		FilterList fList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+		fList.addFilter(new PrefixFilter(this.createPrefix(siteId, postId)));
+		scan.setFilter(fList) ;
+				
+		return this.defaultHtable.getData(TABLE_NAME, CF, this.resultMapper, scan) ;
+	}
+	
 	public List<CrawlComment> getLatestComments(int topN) {
 		Scan scan = new Scan();
 		scan.addFamily(CF);
@@ -73,7 +86,7 @@ public class ExtDocTable {
 		fList.addFilter(new PageFilter(topN));
 		scan.setFilter(fList) ;
 		
-		return this.defaultHtable.getData(TABLE_NAME, CF, this.resultMapper) ;
+		return this.defaultHtable.getData(TABLE_NAME, CF, this.resultMapper, scan) ;
 	}
 	
 	public void appendCommnetData(List<CrawlComment> lstCmt) {
@@ -92,6 +105,14 @@ public class ExtDocTable {
 		}
 		
 		this.defaultHtable.put(TABLE_NAME, puts);
+	}
+	
+	private byte[] createPrefix(String siteId, int postId) {
+		StringBuffer sb = new StringBuffer() ;
+		sb.append(siteId).append("_") ;
+		sb.append(Integer.MAX_VALUE - postId);
+		
+		return Bytes.toBytes(sb.toString()) ;
 	}
 	
 	private byte[] createRowKey(String siteId, int postId, int cmtId) {

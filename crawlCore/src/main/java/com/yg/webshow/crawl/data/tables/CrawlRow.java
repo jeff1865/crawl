@@ -89,4 +89,8 @@ public class CrawlRow {
 	public void setDocTitle(String docTitle) {
 		this.docTitle = docTitle;
 	}
+	
+	public String getDocDateTime() {
+		return new Date(this.docTs).toString();
+	}
 }

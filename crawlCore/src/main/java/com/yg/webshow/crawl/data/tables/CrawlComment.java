@@ -21,7 +21,9 @@ public class CrawlComment {
 				
 		return sb.toString() ;
 	}
-	
+	public String getStrTimestamp() {
+		return new Date(this.initTime).toString();
+	}
 	public String getSiteId() {
 		return siteId;
 	}

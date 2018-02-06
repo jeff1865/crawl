@@ -8,8 +8,6 @@ import java.util.List;
 import org.mortbay.log.Log;
 
 import com.yg.webshow.crawl.core.SysConf;
-import com.yg.webshow.crawl.data.CrawlDataExBo;
-import com.yg.webshow.crawl.data.RtCrawlTable;
 import com.yg.webshow.crawl.seeds.IBbsContents;
 import com.yg.webshow.crawl.seeds.IBbsList;
 import com.yg.webshow.crawl.seeds.IDocWrapper;
@@ -19,6 +17,9 @@ import com.yg.webshow.crawl.util.FileDownloader;
 import com.yg.webshow.crawl.webdoc.template.DbbsTitleLine;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbs;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbsList;
+
+import xcom.yg.webshow.crawl.data.CrawlDataExBo;
+import xcom.yg.webshow.crawl.data.RtCrawlTable;
 
 public class RtBbsProcess {
 	

@@ -1,4 +1,4 @@
-package com.yg.webshow.crawl.data;
+package xcom.yg.webshow.crawl.data;
 
 import java.util.Date;
 
