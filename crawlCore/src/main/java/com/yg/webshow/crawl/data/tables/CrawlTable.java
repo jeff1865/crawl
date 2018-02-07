@@ -41,6 +41,9 @@ public class CrawlTable {
 	private static final byte[] CQ_URL = Bytes.toBytes("url");
 	private static final byte[] CQ_MEDIA_COUNT = Bytes.toBytes("mdc");
 	
+	private static final byte[] CQ_LATEST_UPD_TS = Bytes.toBytes("uts") ;
+	private static final byte[] CQ_UPD_COUNT = Bytes.toBytes("upt") ;
+	
 	private static final String PREFIX_MEDIA = "med_";
 	private static final String PREFIX_COMMENT = "cmt_";
 	public static final String VAL_STATUS_INIT = "INIT";
@@ -86,6 +89,10 @@ public class CrawlTable {
 						cdb.setUrl(new String(CellUtil.cloneValue(cell)));
 					} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_HTML_CONTENTS)) {
 						cdb.setHtmlContents(new String(CellUtil.cloneValue(cell)));
+					} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_LATEST_UPD_TS)) {
+						cdb.setUpdateDate(Bytes.toLong(CellUtil.cloneValue(cell)));
+					} else if(Arrays.equals(CellUtil.cloneQualifier(cell), CQ_UPD_COUNT)) {
+						cdb.setUpdateCount(Bytes.toInt(CellUtil.cloneValue(cell)));
 					}
 				}
 				
@@ -96,26 +103,37 @@ public class CrawlTable {
 		
 	}
 		
-	public void updateContents(String siteId, String postId, String contents, String htmlContents) {
+	public void updateContents(String siteId, String postId, String contents, String htmlContents, int count) {
 		List<Put> puts = new ArrayList<Put>();
 		Put put = new Put(this.createRowKey(siteId, postId));
 		put.addColumn(CF, CQ_CONTENTS, Bytes.toBytes(contents));
 		put.addColumn(CF, CQ_HTML_CONTENTS, Bytes.toBytes(htmlContents));
 		put.addColumn(CF, CQ_STATUS, Bytes.toBytes(VAL_STATUS_EXTDATA));
 		
+		put.addColumn(CF, CQ_LATEST_UPD_TS, Bytes.toBytes(System.currentTimeMillis()));
+		put.addColumn(CF, CQ_UPD_COUNT, Bytes.toBytes(count));
+		puts.add(put) ;
+		this.defaultHtable.put(TABLE_NAME, puts);;
+	}
+	
+	public void updateStatus(String siteId, String postId, String status) {
+		List<Put> puts = new ArrayList<Put>();
+		Put put = new Put(this.createRowKey(siteId, postId));
+		put.addColumn(CF, CQ_STATUS, Bytes.toBytes(status));
+		
 		puts.add(put) ;
 		this.defaultHtable.put(TABLE_NAME, puts);;
 	}
 	
 	//TODO need to consider Reflection!!
-	public void upsertData(CrawlRow crawlRow) {
+	public void insertData(CrawlRow crawlRow) {
 		List<CrawlRow> data = new ArrayList<CrawlRow>(1);
 		data.add(crawlRow);
 		
-		upsertData(data);
+		insertData(data);
 	}
 	
-	public void upsertData(List<CrawlRow> crawlRows) {
+	public void insertData(List<CrawlRow> crawlRows) {
 		List<Put> puts = new ArrayList<Put>();
 		
 		for(CrawlRow crawlRow : crawlRows) {
@@ -125,7 +143,12 @@ public class CrawlTable {
 			put.addColumn(CF, CQ_URL, Bytes.toBytes(crawlRow.getUrl()));
 			put.addColumn(CF, CQ_DOC_TS, Bytes.toBytes(crawlRow.getDocTs()));
 			put.addColumn(CF, CQ_STATUS, Bytes.toBytes(VAL_STATUS_INIT));
-						
+			
+			put.addColumn(CF, CQ_DOC_TS, Bytes.toBytes(crawlRow.getDocTs()));
+			
+			put.addColumn(CF, CQ_LATEST_UPD_TS, Bytes.toBytes(System.currentTimeMillis())) ;
+			put.addColumn(CF, CQ_UPD_COUNT, Bytes.toBytes(0)) ;
+			
 			puts.add(put) ;
 		}
 		
@@ -165,6 +188,26 @@ public class CrawlTable {
 		scan.setFilter(fList) ;
 		
 		return this.defaultHtable.getData(TABLE_NAME, CF, this.resultMapper, scan) ;
+	}
+	
+	public List<CrawlRow> getLatestData(int pageNo, int pageCnt, String status) {
+		Scan scan = new Scan();
+		scan.addFamily(CF);
+		FilterList fList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+		if(status != null) {
+			fList.addFilter(new SingleColumnValueFilter(CF,
+					CQ_STATUS, CompareOp.EQUAL, Bytes.toBytes(status)));
+		}
+		
+//		scan.setFilter(fList) ;
+		
+//		return this.defaultHtable.getData(TABLE_NAME, CF, this.resultMapper, scan) ;
+		
+		int startIndex = pageNo * pageCnt ;
+		int endIndex = startIndex + pageCnt ;
+		
+		return this.defaultHtable.getData(TABLE_NAME, CF, this.resultMapper, scan, startIndex, endIndex) ;
+		
 	}
 	
 	public List<CrawlRow> getAllData() {

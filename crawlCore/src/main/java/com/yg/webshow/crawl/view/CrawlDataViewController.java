@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.yg.webshow.crawl.data.tables.CrawlComment;
 import com.yg.webshow.crawl.data.tables.CrawlRow;
@@ -27,11 +28,19 @@ public class CrawlDataViewController {
 	}
 	
 	@RequestMapping("/xf/crawl/list")
-	public String displayCrawlData(Model model) {
+	public String displayCrawlData(@RequestParam(required=false) int pageNo, 
+			@RequestParam(required=false) int pageCnt, Model model) {
 		log.info("detected crawlData ..");
 		model.addAttribute("hello","World at " + System.currentTimeMillis()) ;
 		
-		List<CrawlRow> allData = this.crawlTable.getAllData();
+//		List<CrawlRow> allData = this.crawlTable.getAllData();
+		if(pageCnt == 0) {
+			pageCnt = 100 ;
+		}
+		
+		log.info("pageIdx/pageCnt = " + pageNo + "/" + pageCnt);
+				
+		List<CrawlRow> allData = this.crawlTable.getLatestData(pageNo, pageCnt, null) ;
 		model.addAttribute("crawlList", allData) ;
 		
 		return "listView" ;

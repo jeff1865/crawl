@@ -14,6 +14,9 @@ public class CrawlRow {
 	private String htmlContents ;
 	private String docTitle ;
 	
+	private long updateDate ;
+	private int updateCount ;
+	
 	public String toString() {
 		StringBuffer sb = new StringBuffer() ;
 		sb.append(this.siteId).append("\t");
@@ -24,11 +27,31 @@ public class CrawlRow {
 		sb.append(this.author).append("\t");
 		sb.append(new Date(this.docTs)).append("\t");
 		sb.append(this.status).append("\t");
-		sb.append(this.url);
+		sb.append(this.url).append("\t");
+		sb.append(new Date(this.updateDate)).append("\t");
+		sb.append(this.updateCount).append("\t");
 		
 		return sb.toString() ;
 	}
+	public String getStrUpdateDate() {
+		return new Date(updateDate).toString();
+	}
 	
+	public long getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(long updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public int getUpdateCount() {
+		return updateCount;
+	}
+
+	public void setUpdateCount(int updateCount) {
+		this.updateCount = updateCount;
+	}
 	public String getSiteId() {
 		return siteId;
 	}

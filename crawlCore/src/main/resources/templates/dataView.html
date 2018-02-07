@@ -9,10 +9,12 @@
 Crawled Data Page
 
 <table border="1">
-	<tr><td th:text="${doctum.anchorTitle}"></td></tr>
-	<tr><td th:text="${doctum.author}"></td></tr>
-	<tr><td th:text="${doctum.filteredContents}"></td></tr>
-	<tr><td th:utext="${doctum.htmlContents}"></td></tr>
+	<tr><td>Anchor Title</td><td th:text="${doctum.anchorTitle}"></td></tr>
+	<tr><td>Author</td><td th:text="${doctum.author}"></td></tr>
+	<tr><td>Meta Contents</td><td th:text="${doctum.filteredContents}"></td></tr>
+	<tr><td>HTML Contents</td><td th:utext="${doctum.htmlContents}"></td></tr>
+	<tr><td>Latest Update Date</td><td th:utext="${doctum.strUpdateDate}"></td></tr>
+	<tr><td>Update Count</td><td th:utext="${doctum.updateCount}"></td></tr>
 </table>
 
 <table border="1">

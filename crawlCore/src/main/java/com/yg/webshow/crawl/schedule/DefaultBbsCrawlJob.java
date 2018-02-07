@@ -51,7 +51,7 @@ public class DefaultBbsCrawlJob implements CrawlJob {
 			crawlRow.setUrl(dtl.getUrl());
 			crawlRow.setSiteId("clien.park");
 						
-			this.crawlTable.upsertData(crawlRow);
+			this.crawlTable.insertData(crawlRow);
 		}
 		
 		return i ;
@@ -68,9 +68,14 @@ public class DefaultBbsCrawlJob implements CrawlJob {
 		for(CrawlRow crawlRow : initData) {
 			// process context
 			WebDocBbs content = this.docWrapper.getContent(crawlRow.getUrl()) ;
+			if(content == null) {
+				this.crawlTable.updateStatus(crawlRow.getSiteId(), crawlRow.getPostId(), "ERROR");
+				continue ;
+			}
+			
 			System.out.println("--> Contents to be updated :" + crawlRow.toString());			
 			this.crawlTable.updateContents(crawlRow.getSiteId(), crawlRow.getPostId(), content.getContentsText(), 
-					content.getContentsHtml());
+					content.getContentsHtml(), crawlRow.getUpdateCount() + 1);
 
 			// process comment
 			List<DComment> comments = content.getComment();

@@ -10,6 +10,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.PageFilter;
 
 public class DefaultHTable extends HbaseControl {
 	
@@ -46,6 +48,33 @@ public class DefaultHTable extends HbaseControl {
 			}
 		});
 	}
+	
+	public <T> List<T> getData(TableName tableName, byte[] family, final ResultMapper<T> ob, final Scan scan, 
+			int startIndex, int endIndex) {
+		List<T> resData = new ArrayList<>();
+		
+		return this.invoke(tableName, new TableFunction<List<T>>() {
+			@Override
+			public List<T> invoke(Table table) throws Throwable {
+				
+//				Scan scan = new Scan() ;
+				ResultScanner rs = table.getScanner(scan) ;
+				
+				int i = 0;
+				for(Result result : rs) {
+					if(startIndex <= i && i <= endIndex)
+						resData.add(ob.convert(result)) ;
+					else if(i > endIndex) {
+						break ;
+					}
+					i ++ ;
+				}
+				
+				return resData;
+			}
+		});
+	}
+	
 	
 	public <T> List<T> getData(TableName tableName, byte[] family, final ResultMapper<T> ob, final Scan scan) {
 		List<T> resData = new ArrayList<>();

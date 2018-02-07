@@ -9,6 +9,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.mortbay.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.yg.webshow.crawl.seeds.IDocWrapper;
 import com.yg.webshow.crawl.webdoc.template.DComment;
@@ -17,6 +20,7 @@ import com.yg.webshow.crawl.webdoc.template.WebDocBbs;
 import com.yg.webshow.crawl.webdoc.template.WebDocBbsList;
 
 public class NewClienParkV2 implements IDocWrapper {
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	private String seedUrl = null ;
 	private final String seedId = "clien.park";
@@ -72,8 +76,9 @@ public class NewClienParkV2 implements IDocWrapper {
 
 	@Override
 	public WebDocBbs getContent(String url) {
-		WebDocBbs wdb = new WebDocBbs();
+		WebDocBbs wdb = null ;
 		try {
+			wdb = new WebDocBbs();
 			Document doc = Jsoup.connect(url).get();
 			
 //			wdb.setContentsHtml(doc.select("div[class=post_article fr-view]").toString());
@@ -86,8 +91,10 @@ public class NewClienParkV2 implements IDocWrapper {
 			String writer = doc.select("input[id=writer]").attr("value");
 			wdb.setComment(this.getComments(postId, writer));
 			
-		} catch(IOException e) {
-			e.printStackTrace();
+		} catch(Exception e) {
+//			e.printStackTrace();
+			log.error("Invalid Link :" + e.getMessage());
+			return null ;
 		}
 		
 		return wdb;
