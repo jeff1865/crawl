@@ -28,7 +28,9 @@ public class CrawlDataViewController {
 	}
 	
 	@RequestMapping("/xf/crawl/list")
-	public String displayCrawlData(@RequestParam(required=false) int pageNo, 
+	public String displayCrawlData(
+			@RequestParam(required=false) String siteId,
+			@RequestParam(required=false) int pageNo, 
 			@RequestParam(required=false) int pageCnt, Model model) {
 		log.info("detected crawlData ..");
 		model.addAttribute("hello","World at " + System.currentTimeMillis()) ;
@@ -40,7 +42,7 @@ public class CrawlDataViewController {
 		
 		log.info("pageIdx/pageCnt = " + pageNo + "/" + pageCnt);
 				
-		List<CrawlRow> allData = this.crawlTable.getLatestData(pageNo, pageCnt, null) ;
+		List<CrawlRow> allData = this.crawlTable.getLatestData(siteId, pageNo, pageCnt, null) ;
 		model.addAttribute("crawlList", allData) ;
 		
 		return "listView" ;

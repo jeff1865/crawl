@@ -74,7 +74,7 @@ public class CmdController {
 			crawlJob = new DefaultBbsCrawlJob(clien, crawlTable, this.extDocTable);
 		}
 		
-		return "Update Completed :" + this.crawlJob.updatePage() ;
+		return "Update Completed :" + this.crawlJob.updatePage(5) ;
 	}
 	
 	@RequestMapping(value="/exec/clien/comment", method=RequestMethod.GET)

@@ -63,7 +63,7 @@ public class CrawlTable {
 				String rowKey = Bytes.toString(rs.getRow());
 				System.out.println("rowKey -> " + rowKey);
 				if(rowKey != null) { 
-					cdb.setPostId(String.valueOf(Integer.MAX_VALUE - Integer.parseInt(rowKey.split("_")[1])));
+					cdb.setPostId(String.valueOf(Long.MAX_VALUE - Long.parseLong(rowKey.split("_")[1])));
 					cdb.setSiteId(rowKey.split("_")[0]);
 				}
 				
@@ -158,7 +158,8 @@ public class CrawlTable {
 	private byte[] createRowKey(String siteId, String postId) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(siteId).append("_");
-		sb.append(Integer.MAX_VALUE - Integer.parseInt(postId));
+//		sb.append(Integer.MAX_VALUE - Integer.parseInt(postId));
+		sb.append(postId) ;
 		
 		return Bytes.toBytes(sb.toString()) ;
 	}
@@ -190,8 +191,8 @@ public class CrawlTable {
 		return this.defaultHtable.getData(TABLE_NAME, CF, this.resultMapper, scan) ;
 	}
 	
-	public List<CrawlRow> getLatestData(int pageNo, int pageCnt, String status) {
-		Scan scan = new Scan();
+	public List<CrawlRow> getLatestData(String seedId, int pageNo, int pageCnt, String status) {
+		Scan scan = new Scan(Bytes.toBytes(seedId));
 		scan.addFamily(CF);
 		FilterList fList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
 		if(status != null) {

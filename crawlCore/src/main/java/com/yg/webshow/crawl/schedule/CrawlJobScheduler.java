@@ -1,30 +1,42 @@
 package com.yg.webshow.crawl.schedule;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import com.yg.webshow.crawl.data.tables.CrawlTable;
+import com.yg.webshow.crawl.data.tables.ExtDocTable;
+import com.yg.webshow.crawl.seeds.IDocWrapper;
 
 @Service
 public class CrawlJobScheduler {
 	private Logger log = Logger.getLogger(CrawlJobScheduler.class) ;
 	
-	private List<CrawlJob> jobQueue = new ArrayList<CrawlJob>() ;
+//	private List<CrawlJob> jobQueue = new ArrayList<CrawlJob>() ;
+	@Autowired private JobRepository jobRepository = null;
+	@Autowired private CrawlTable crawlTable = null ;
+	@Autowired private ExtDocTable extDocTable = null ;
+	
 	private static long monCnt = 0 ;
 	
 	public CrawlJobScheduler() {
 		;
 	}
 	
-	public CrawlJob createCrawlJob() {
-		return null ;
+	public void addNewBbsJob(IDocWrapper dw) {
+		this.jobRepository.addJob(new DefaultBbsCrawlJob(dw, this.crawlTable, this.extDocTable));
 	}
 	
+	
+	public JobRepository getJobRepository() {
+		return this.jobRepository ;
+	}
+		
+	//TODO
 	public synchronized void startJob(CrawlJob crawlJob) {
 		log.info("Add & Schedule Job :" + crawlJob);
-		this.jobQueue.add(crawlJob) ;
+//		this.jobQueue.add(crawlJob) ;
 	}
 	
 	

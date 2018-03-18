@@ -49,18 +49,19 @@ public class DefaultBbsCrawlJob implements CrawlJob {
 			
 			crawlRow.setPostId(dtl.getNo());
 			crawlRow.setUrl(dtl.getUrl());
-			crawlRow.setSiteId("clien.park");
+//			crawlRow.setSiteId("clien.park");
+			crawlRow.setSiteId(this.docWrapper.getSeedId());
 						
 			this.crawlTable.insertData(crawlRow);
 		}
 		
 		return i ;
 	}
-	// 이거하고, 페이지 get을 구현하라!!
+	
 	@Override
-	public int updatePage() {
+	public int updatePage(int topN) {
 		// TODO Auto-generated method stub
-		List<CrawlRow> initData = this.crawlTable.getLatestData(5, CrawlTable.VAL_STATUS_INIT) ;
+		List<CrawlRow> initData = this.crawlTable.getLatestData(topN, CrawlTable.VAL_STATUS_INIT) ;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		int i = 0;
 		List<CrawlComment> lstCmt = null ;
@@ -106,6 +107,19 @@ public class DefaultBbsCrawlJob implements CrawlJob {
 
 				
 		return lstCmt.size();
+	}
+
+
+	@Override
+	public List<?> getUpUrls() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String getJobId() {
+		return this.docWrapper.getSeedId();
 	}
 
 }

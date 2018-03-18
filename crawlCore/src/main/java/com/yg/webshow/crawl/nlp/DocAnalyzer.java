@@ -1,4 +1,4 @@
-package com.yg.webshow.crawl.core;
+package com.yg.webshow.crawl.nlp;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
+import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.plot.BarnesHutTsne;
 import org.deeplearning4j.text.sentenceiterator.LineSentenceIterator;
@@ -39,7 +40,7 @@ public class DocAnalyzer {
 		    	return sentence.toLowerCase();
 		    }
 		});
-		
+				
 		// Init Tokenizer
 		TokenizerFactory tokenizer = new KoreanTokenizerFactory();
 		tokenizer.setTokenPreProcessor(new CommonPreprocessor());
@@ -65,17 +66,20 @@ public class DocAnalyzer {
 		vec.fit();
 		
 		// Write word vectors
-		WordVectorSerializer.writeWordVectors(vec, "/Users/1002000/temp_han/res_" + System.currentTimeMillis() + ".txt");
-
+		WordVectorSerializer.writeWordVectors(vec, "/Users/1002000/temp_han2/res_" + System.currentTimeMillis() + ".txt");
+		
+//		WordVectorSerializer.loadTxtVectors("")
+		
+		
 //		log.info("Closest Words:");
-		Collection<String> lst = vec.wordsNearest("드래곤", 10);
+		Collection<String> lst = vec.wordsNearest("일본", 10);
 		System.out.println("\'Dragon\' sim ---> "+ lst);	
 		
 		// Server doesn't work
 //		UiServer server = UiServer.getInstance();
 //		System.out.println("Started on port " + server.getPort());
 		
-		double cosSim = vec.similarity("베리", "서연");
+		double cosSim = vec.similarity("일본", "중국");
 		System.out.println("cosine sim --->" + cosSim);
 		
 //		System.out.println("AA--");
@@ -83,7 +87,7 @@ public class DocAnalyzer {
 		// Model Visualization
 		log.info("Plot TSNE....");
 		BarnesHutTsne tsne = new BarnesHutTsne.Builder()
-			.setMaxIter(1000)
+			.setMaxIter(200)
 			.stopLyingIteration(250)
 			.learningRate(500)
 			.useAdaGrad(false)
@@ -92,7 +96,20 @@ public class DocAnalyzer {
 			.normalize(true)
 //			.usePca(false)
 			.build();
-		vec.lookupTable().plotVocab(tsne, 20, new File("/Users/1002000/temp_han/flotvoca2.txt"));
+		vec.lookupTable().plotVocab(tsne, 200, new File("/Users/1002000/temp_han2/eco2018tse2.txt"));
+	}
+	
+	public static void dataTest(String file) throws Exception {
+		WordVectors vec = WordVectorSerializer.loadTxtVectors(new File(file)) ;
+		
+		String qryWord = "둔화";
+		Collection<String> wordsNearest = vec.wordsNearest(qryWord, 30);
+		System.out.println(qryWord + "->" + wordsNearest);
+		
+		double cosSim = vec.similarity("일본", "중국");
+		System.out.println("일본 중국 : cosine sim --->" + cosSim);
+		cosSim = vec.similarity("일본", "러시아");
+		System.out.println("일본 러시아 : cosine sim --->" + cosSim);
 	}
 	
 	public static void main(String ... v) {
@@ -100,11 +117,14 @@ public class DocAnalyzer {
 //		TokenizerFactory kt = new KoreanTokenizerFactory();
 //		kt.setTokenPreProcessor(new CommonPreprocessor());
 		
-		String file = "/Users/1002000/sample_nn.txt";
+		String file = "/Users/1002000/temp_han2/economy2018.txt";
 		try {
-			System.out.println("Processing File ..");
-			process(file);
-			System.out.println("Processing File completed ..");
+//			System.out.println("Processing File ..");
+//			process(file);
+//			System.out.println("Processing File completed ..");
+			
+			
+			dataTest("/Users/1002000/temp_han2/res_1519278754296.txt") ;
 			
 		} catch (Exception e) {
 			e.printStackTrace();

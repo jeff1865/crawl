@@ -14,6 +14,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import com.yg.webshow.crawl.data.tables.CrawlRow;
 import com.yg.webshow.crawl.data.tables.CrawlTable;
 import com.yg.webshow.crawl.schedule.CrawlJobScheduler;
+import com.yg.webshow.crawl.seeds.sample.clien.NewClienParkV2;
+import com.yg.webshow.crawl.seeds.sample.nhnnews.NaverStockNews;
 
 @SpringBootApplication
 @EnableScheduling
@@ -24,9 +26,6 @@ public class CrawlCoreApplication implements CommandLineRunner {
 	
 	@Autowired private SystemProperties systemPropreties = null ;
 	@Autowired private CrawlJobScheduler crawlJobScheduler = null ;
-//	@Autowired private MrCrawlTable mrCrawlTable = null ;
-	
-//	@Autowired private TableFactory tableFactory = null ;
 	
 	@Autowired private CrawlTable crawlTable = null ;
 	
@@ -41,11 +40,7 @@ public class CrawlCoreApplication implements CommandLineRunner {
 	}
 	
 	private void printDataTopN() {
-//		Table rtCrawlTbl = this.tableFactory.getTable(TableName.valueOf("rtCrawl")) ;
-//		DefaultHTable defaultHtable = new DefaultHTable();
-//		defaultHtable.setTableFactory(this.tableFactory);
-//				
-//		CrawlTable crawlTable = new CrawlTable(defaultHtable) ;
+
 		List<CrawlRow> allData = crawlTable.getAllData();
 		
 		int i = 0;
@@ -56,10 +51,6 @@ public class CrawlCoreApplication implements CommandLineRunner {
 	}
 	
 	private void printData() {
-//		DefaultHTable defaultHtable = new DefaultHTable();
-//		defaultHtable.setTableFactory(this.tableFactory);
-//				
-//		CrawlTable crawlTable = new CrawlTable(defaultHtable) ;
 		CrawlRow data = crawlTable.getData("clien.park", "2136769918") ;
 		
 		System.out.println("Single! -> " + data);
@@ -70,26 +61,26 @@ public class CrawlCoreApplication implements CommandLineRunner {
 		}
 	}
 	
+	private void initJobs() {
+		this.crawlJobScheduler.addNewBbsJob(new NaverStockNews());
+		this.crawlJobScheduler.addNewBbsJob(new NewClienParkV2("https://www.clien.net/service/board/park"));
+	}
+	
 	
 	@Override
 	public void run(String... args) throws Exception {
 		this.printProperties();
 		
-		this.printDataTopN();
-		
-		this.printData();
+//		this.printDataTopN();
+//		this.printData();
 //		this.printTonN();
 				
-		// TODO Auto-generated method stub
+		System.out.println("----------------- init jobs ------------------");
+		this.initJobs();
+		System.out.println("----------------------------------------------");
 		System.out.println("Start System ..");
 //		this.crawlJobScheduler.startSystem();
 	}
-	
-//	private void printTonN() {
-//		List<CrawlDataExBo> latest = this.mrCrawlTable.getLatest(10, null) ;
-//		for(CrawlDataExBo crawlDataBo : latest) {
-//			System.out.println("-->" + crawlDataBo);
-//		}
-//	}
+
 	
 }

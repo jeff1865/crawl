@@ -1,4 +1,4 @@
-package com.yg.webshow.crawl.core;
+package com.yg.webshow.crawl.nlp;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -41,7 +41,7 @@ public class HangleProcessor {
 		BufferedReader br = null;
 		
 		try {
-			br = new BufferedReader(new FileReader("/Users/1002000/sample_han.txt"));
+			br = new BufferedReader(new FileReader("/Users/1002000/temp_han2/economy2018.txt"));
 			
 			String line = null; 
 			while((line = br.readLine()) != null) {
@@ -50,6 +50,7 @@ public class HangleProcessor {
 				for (List<Pair<String, String>> eojeolResult : result) {
 					for (Pair<String, String> wordMorph : eojeolResult) {
 						String snd = wordMorph.getSecond() ;
+						System.out.println("snd>" + snd + ", norm>" + wordMorph.getFirst());
 						if(snd != null && snd.startsWith("NN")) {
 							System.out.print(wordMorph.getFirst() + " ");
 						}
@@ -88,7 +89,7 @@ public class HangleProcessor {
 		BufferedReader br = null ;
 		
 		try {
-			br = new BufferedReader(new FileReader("/Users/1002000/sample_hangle.txt"));
+			br = new BufferedReader(new FileReader("/Users/1002000/temp_han2/economy2018.txt"));
 			String line = null ;
 			int z = 0;
 			StringTokenizer stkz = null ;

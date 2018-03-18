@@ -60,7 +60,7 @@ public class NewClienParkV2 implements IDocWrapper {
 				line.setAuthor(author);
 				line.setUrl(url);
 				line.setDate(timestamp);
-				line.setNo(number);
+				line.setNo(String.valueOf(Integer.MAX_VALUE - Integer.parseInt(number)));
 				line.setTitle(anchorTitle);
 				
 				titleLines.add(line) ;
@@ -140,8 +140,7 @@ public class NewClienParkV2 implements IDocWrapper {
 
 	@Override
 	public String getSeedId() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.seedId;
 	}
 
 	@Override
